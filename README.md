@@ -30,11 +30,16 @@ The elixir umbrella application includes the following applications
   * apm_issues - define, manipulate, and persistent (Jira)Issues
   * apm_user - functions for user, role, ...
   
+### ./aurelia-frontend
+
+Just another frontend to give feedback for developers about how the APM
+backend in ./elexir can be used.
+  
 ### ./docs
 
 Files for the [Github.io pages] of this project.
 
-#### Quick start developing 
+## Quick start developing 
 
   * cd into `elixir/apps/apm_px`
   * start the server with `mix phoenix.server` (in an extra terminal window)
@@ -43,7 +48,7 @@ Files for the [Github.io pages] of this project.
   * run the tests in path `elixir` with `mix test --trace`
   * run only the unit-tests without E2E `mix test --trace --exclude hound`
 
-#### Start development- and testing-environment with tmux and fish-shell
+## Start development- and testing-environment with tmux and fish-shell
 
 If you a TMUX-user, you can start all of the stuff mentioned above with
 a single command `apm.tmux`
@@ -53,13 +58,6 @@ a single command `apm.tmux`
   * execute apm.tmux
     - It starts the phoenix server
     - it runs phantomjs for hound testing
-
-
-### ./aurelia-frontend
-
-Just another frontend to give feedback for developers about how the APM
-backend in ./elexir can be used.
-
 
 [Elixir]: https://elixir-lang.org
 [Elixir-Getting Started]: https://elixir-lang.org/getting-started/introduction.html
