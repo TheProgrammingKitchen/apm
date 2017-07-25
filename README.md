@@ -15,7 +15,9 @@
 ## On the Web
 
   * [Github][]
-  * [Pivotal Tracker][]
+  * [ZenHub Board][]
+  * [Pivotal Tracker][] *_deprecated-*
+
 
 ## Project Structure and Subdirectories
 
@@ -62,3 +64,4 @@ backend in ./elexir can be used.
 [Github]: https://github.com/iboard/apm
 [Pivotal Tracker]: https://www.pivotaltracker.com/n/projects/2079917
 
+[ZenHub Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128
