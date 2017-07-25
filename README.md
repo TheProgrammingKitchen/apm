@@ -29,6 +29,10 @@ The elixir umbrella application includes the following applications
   * apm_px - Phoenix Front- and Backend
   * apm_issues - define, manipulate, and persistent (Jira)Issues
   * apm_user - functions for user, role, ...
+  
+### ./docs
+
+Files for the [Github.io pages] of this project.
 
 #### Quick start developing 
 
@@ -67,3 +71,4 @@ backend in ./elexir can be used.
 
 [ZenHub Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128
 [Project Page]: https://theprogrammingkitchen.github.io/apm/
+[Github.io pages]: https://theprogrammingkitchen.github.io/apm/
