@@ -31,6 +31,22 @@ defmodule ApmPx.E2EIssuesTest do
 
       assert visible_text({:class, "alert-success"}) =~ "Issue successfully created"
     end
+
+    @tag :hound
+    test "GET /issues/:id/edit can modify an issue" do
+      ApmIssues.Issue.new("A-1-1", "A-1-1", %{description: "Original Text"})
+
+      login_as("user", "developer")
+      navigate_to("http://localhost:4000/issues/A-1-1/edit")
+      take_screenshot
+      fill_field({:name, "issue[description]"}, "A Modified Issue")
+      submit_element({:name, "issue[subject]"})
+      take_screenshot
+
+      assert visible_text({:class, "alert-success"}) =~ "Issue successfully updated"
+      assert visible_text({:class, "issue-index"}) =~ "A-1-1"
+      assert visible_text({:class, "issue-index"}) =~ "A Modified Issue"
+    end
   end
 
 end

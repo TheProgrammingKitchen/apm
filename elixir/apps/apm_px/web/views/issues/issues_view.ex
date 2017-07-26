@@ -1,5 +1,6 @@
 defmodule ApmPx.IssuesView do
   use ApmPx.Web, :view
+  require Logger
   
   alias ApmIssues.{Repository}
 
@@ -27,6 +28,17 @@ defmodule ApmPx.IssuesView do
     render("_issue_index.html", id: item_id, pid: pid, issue: issue)
   end
 
+  @doc"""
+  Render one issue recursively
+  """
+  def render_edit_issue(conn) do
+    params = conn.params
+    item_id = params["id"]
+    pid = Repository.find_by_id(item_id)
+    issue = ApmIssues.Issue.state({pid, item_id})
+    form(conn, {"POST", "/issues/#{item_id}", issue })
+  end
+
 
   @doc"""
   Render children of an issue recursively
@@ -38,10 +50,9 @@ defmodule ApmPx.IssuesView do
 
   @doc"""
   Render HTML-Form for issue.
-  FIXME: changeset not used yet
   """
-  def form(conn,changeset \\ %ApmIssues.Issue{} ) do
-    render("_form.html", conn: conn, issue: changeset)
+  def form(conn,{method, path, changeset} \\ {"POST", "/issues", %ApmIssues.Issue{}} ) do
+    render("_form.html", conn: conn, issue: changeset, method: method, path: path)
   end
 
 

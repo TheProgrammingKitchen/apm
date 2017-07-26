@@ -7,6 +7,9 @@ defmodule ApmIssues.Issue do
   as their first argument.
   """
 
+  alias ApmIssues.{Repository}
+  require Logger
+
   @doc "The state of an issue is kept in this structure"
   defstruct id: nil, subject: "", options: %{}, children: [], parent_id: nil
 
@@ -30,7 +33,7 @@ defmodule ApmIssues.Issue do
     {:ok, pid} = Agent.start_link(fn -> 
       %ApmIssues.Issue{ id: id, subject: subject, options: opts }
     end)
-    ApmIssues.Repository.push!(pid)
+    Repository.push!(pid)
   end
 
   @doc"""
@@ -125,6 +128,28 @@ defmodule ApmIssues.Issue do
       add_child_to_issue(issue,child_pid)
     end)
     parent_pid
+  end
+
+  @doc"""
+  Update issue
+
+  ## Example:
+
+      iex> issue = ApmIssues.Issue.new("original", "original", options: %{ description: "original" })
+      iex> ApmIssue.Issue.update("original", "original", %{ description: "Modified" })
+      123
+  """
+  def update( id, subject, opts \\ %{} ) do
+    case Repository.find_by_id(id) do
+      :not_found -> :not_found
+      {pid, id} -> update(pid, id, subject, opts)
+    end
+  end
+  def update(pid, _id, _subject, opts) do
+    Agent.update(pid, fn issue ->
+      Map.merge issue, %{ options: opts }
+    end)
+    pid
   end
 
   defp add_child_to_issue(issue,child_pid) do

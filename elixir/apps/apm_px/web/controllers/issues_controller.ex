@@ -8,6 +8,7 @@ defmodule ApmPx.IssuesController do
       - GET `/issues/new` new.html
       - GET `/issues/:id` show.html
       - POST `/issues`    create & redirect to show new issue
+      - PUT  `/issues/:id` update & redirect to show modified issue
 
   """
 
@@ -44,6 +45,25 @@ defmodule ApmPx.IssuesController do
       |> put_flash(:success, gettext("Issue successfully created"))
       |> redirect(to: "/issues/#{id}")
   end
+
+  @doc """
+  Edit an issue
+  """
+  def edit(conn, _params) do
+    render conn, "edit.html"
+  end
+
+  @doc """
+  Update issue
+  """
+  def update(conn, params) do
+    {id,subject,options} = cast(params["issue"])
+    ApmIssues.Issue.update( id, subject, options )
+    conn 
+      |> put_flash(:success, gettext("Issue successfully updated"))
+      |> redirect(to: "/issues/#{id}")
+  end
+
 
 
   ### Private helpers ########################################
