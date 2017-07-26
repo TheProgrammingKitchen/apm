@@ -25,10 +25,12 @@ defmodule ApmPx.Router do
     post "/logout", SessionController, :logout
 
     # issues
-    get "/issues" ,     IssuesController,  :index
-    post "/issues" ,    IssuesController,  :create
-    get "/issues/new" , IssuesController,  :new
-    get "/issues/:id" , IssuesController,  :show
+    get "/issues"          , IssuesController , :index
+    post "/issues"         , IssuesController , :create
+    post "/issues/:id"      , IssuesController , :update
+    get "/issues/new"      , IssuesController , :new
+    get "/issues/:id"      , IssuesController , :show
+    get "/issues/:id/edit" , IssuesController , :edit
   end
 
   # Other scopes may use custom stacks.

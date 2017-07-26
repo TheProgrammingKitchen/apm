@@ -24,18 +24,18 @@ tmx select-pane -t 0
 
 # PANE 0 (left,top) - Phoenix Server
 tmx select-pane -t 1
-tmx send-keys "cd ~/dev/apm/elixir/apps/apm_px" C-m
+tmx send-keys "cd ~//dev/TheProgrammingKitchen/apm/elixir/apps/apm_px" C-m
 tmx send-keys "mix phoenix.server" C-m
 
 # PANE 2 (left,bottom) - Phantom JS
 
 tmx send-keys "sleep 5" C-m
 tmx select-pane -t 2
-tmx send-keys "cd ~/dev/apm/elixir/apps/apm_px" C-m
+tmx send-keys "cd ~//dev/TheProgrammingKitchen/apm/elixir/apps/apm_px" C-m
 tmx send-keys "phantomjs --wd" C-m
 
 # PANE 4 (right,bottom) - Terminal
 tmx send-keys "sleep 5" C-m
 tmx select-pane -t 0
-tmx send-keys "cd ~/dev/apm/elixir" C-m
+tmx send-keys "cd ~//dev/TheProgrammingKitchen/apm/elixir" C-m
 tmx send-keys "mix test --trace | grep -E \"^(==>)|(\d+ tests,)\"" C-m

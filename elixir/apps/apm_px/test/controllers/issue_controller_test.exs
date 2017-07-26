@@ -49,6 +49,23 @@ defmodule ApmPx.IssueControllerTest do
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Some text"}
   end
 
+  test "PUT /issues/:id updates an existing issue", %{conn: conn} do
+    conn 
+    |> login_as("some user", "admin") 
+    |> post( "/issues", 
+             %{issue: %{ subject: "Issue123", description: "Original text"}} 
+           )
+    conn 
+    |> login_as("some user", "admin") 
+    |> post( "/issues/Issue123", 
+             %{issue: %{ subject: "Issue123", description: "Modified text"}} 
+           )
+    issue = ApmIssues.Repository.find_by_id("Issue123")
+    assert ApmIssues.Issue.state(issue).id == "Issue123"
+    assert ApmIssues.Issue.state(issue).subject == "Issue123"
+    assert ApmIssues.Issue.state(issue).options == %{"description" => "Modified text"}
+  end
+
 
 
 end
