@@ -49,7 +49,7 @@ defmodule ApmPx.IssueControllerTest do
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Some text"}
   end
 
-  test "PUT /issues/:id updates an existing issue", %{conn: conn} do
+  test "POST /issues/:id updates an existing issue", %{conn: conn} do
     conn 
     |> login_as("some user", "admin") 
     |> post( "/issues", 

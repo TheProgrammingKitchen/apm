@@ -8,7 +8,7 @@ defmodule ApmPx.Mixfile do
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
      lockfile: "../../mix.lock",
-     elixir: "~> 1.2",
+     elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -23,8 +23,7 @@ defmodule ApmPx.Mixfile do
     [
       mod: {ApmPx, []},
       applications: [
-        :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-        :apm_issues
+        :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext
       ]
     ]
   end
@@ -45,8 +44,8 @@ defmodule ApmPx.Mixfile do
      {:cowboy, "~> 1.0"},
      {:hound, "~> 1.0"},
      {:earmark, "~> 1.0"},
-     {:apm_user, in_umbrella: true },
-     {:apm_issues, in_umbrella: true }
+     {:apm_issues, in_umbrella: true },
+     {:apm_user, in_umbrella: true }
     ]
   end
 end

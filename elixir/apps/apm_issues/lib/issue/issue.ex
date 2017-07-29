@@ -135,9 +135,12 @@ defmodule ApmIssues.Issue do
 
   ## Example:
 
-      iex> issue = ApmIssues.Issue.new("original", "original", options: %{ description: "original" })
-      iex> ApmIssue.Issue.update("original", "original", %{ description: "Modified" })
-      123
+      iex> ApmIssues.Issue.new("original", "original", %{ description: "original" })
+      iex> pid = ApmIssues.Issue.update("original", "original", %{ description: "Modified" }) 
+      iex> ApmIssues.Issue.state(pid)
+      %ApmIssues.Issue{children: [], id: "original",
+                        options: %{description: "Modified"}, parent_id: nil,
+                        subject: "original"}
   """
   def update( id, subject, opts \\ %{} ) do
     case Repository.find_by_id(id) do

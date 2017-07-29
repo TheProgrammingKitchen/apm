@@ -36,7 +36,7 @@ defmodule ApmPx.IssuesView do
     item_id = params["id"]
     pid = Repository.find_by_id(item_id)
     issue = ApmIssues.Issue.state({pid, item_id})
-    form(conn, {"POST", "/issues/#{item_id}", issue })
+    form(conn, {:update, issue })
   end
 
 
@@ -50,10 +50,26 @@ defmodule ApmPx.IssuesView do
 
   @doc"""
   Render HTML-Form for issue.
+  Default to POST new issue (create).
   """
-  def form(conn,{method, path, changeset} \\ {"POST", "/issues", %ApmIssues.Issue{}} ) do
-    render("_form.html", conn: conn, issue: changeset, method: method, path: path)
+  def form(conn,{action, changeset} \\ {:create, %ApmIssues.Issue{}} ) do
+    path = case action do
+      :update -> issues_path(conn, :update, changeset.id)
+      :create -> issues_path(conn, :create)
+      _ -> Logger.error "Action #{action} not supported"
+    end
+      
+    render("_form.html", conn: conn, issue: changeset, path: path)
   end
 
+  @doc "Format subject"
+  def subject(issue) do
+    issue.subject || ""
+  end
+
+  @doc "Format description"
+  def description(issue) do
+    issue.options["description"] || ""
+  end
 
 end

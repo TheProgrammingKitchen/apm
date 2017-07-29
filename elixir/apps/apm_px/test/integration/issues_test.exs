@@ -33,15 +33,16 @@ defmodule ApmPx.E2EIssuesTest do
     end
 
     @tag :hound
-    test "GET /issues/:id/edit can modify an issue" do
-      ApmIssues.Issue.new("A-1-1", "A-1-1", %{description: "Original Text"})
-
+    test "Edit an issue" do
       login_as("user", "developer")
-      navigate_to("http://localhost:4000/issues/A-1-1/edit")
-      take_screenshot
+      navigate_to("http://localhost:4000/issues/new")
+      fill_field({:name, "issue[subject]"}, "A-1-1")
+      fill_field({:name, "issue[description]"}, "Original Description")
+      submit_element({:name, "issue[subject]"})
+      
+      click({:id, "edit-A-1-1"})
       fill_field({:name, "issue[description]"}, "A Modified Issue")
       submit_element({:name, "issue[subject]"})
-      take_screenshot
 
       assert visible_text({:class, "alert-success"}) =~ "Issue successfully updated"
       assert visible_text({:class, "issue-index"}) =~ "A-1-1"
