@@ -1,4 +1,4 @@
-[Agile Project Manager](../index.html)
+[Agile Project Manager](/apm/)
 
 # TODO
 
