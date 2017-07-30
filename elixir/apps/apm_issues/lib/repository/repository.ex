@@ -86,7 +86,7 @@ defmodule ApmIssues.Repository do
       iex> ApmIssues.Repository.drop!
       iex> ApmIssues.Repository.seed()
       iex> all = ApmIssues.Repository.all()
-      iex> Enum.map(all, fn({_p,i}) -> i end)
+      iex> ApmIssues.Repository.ids(all)
       ["Item-2.2", "Item-2.1", "Item-2", "Item-1"]
   """
   def all() do
@@ -98,7 +98,7 @@ defmodule ApmIssues.Repository do
 
   ## Example:
       iex> roots = ApmIssues.Repository.root_issues()
-      iex> Enum.map(roots, fn({_p,i}) -> i end)
+      iex> ApmIssues.Repository.ids(roots)
       ["Item-2", "Item-1"]
   """
   def root_issues() do
@@ -225,6 +225,13 @@ defmodule ApmIssues.Repository do
     Enum.filter(refs, fn({r,_issue}) ->
       r != ref 
     end)
+  end
+
+  @doc """
+  Map `{pid, id}` tuples to id only
+  """
+  def ids(tuples) do
+    Enum.map(tuples, fn({_p,id}) -> id end)
   end
 end
 
