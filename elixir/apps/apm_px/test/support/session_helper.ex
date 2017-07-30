@@ -7,6 +7,12 @@ defmodule ApmPx.SessionHelper do
 
       hound_session()
 
+      setup do
+        Application.ensure_all_started(:apm_repository)
+        :ok
+      end
+
+
       defp select_role(role) do
         find_element(:css, "#role-selector option[value='#{role}']") |> click()
       end

@@ -20,13 +20,13 @@ defmodule ApmIssues.Issue do
 
   ## Example:
 
-      iex> pid = ApmIssues.Issue.new( 1, "My Title" )
+      iex> pid = ApmIssues.Issue.new( "My-Title", "My Title" )
       iex> ApmIssues.Issue.state(pid)
-      %ApmIssues.Issue{options: %{}, id: 1, subject: "My Title", parent_id: nil}
+      %ApmIssues.Issue{options: %{}, id: "My-Title", subject: "My Title", parent_id: nil}
 
-      iex> pid = ApmIssues.Issue.new( 1, "One", %{state: :new} )
+      iex> pid = ApmIssues.Issue.new( "One", "One", %{state: :new} )
       iex> ApmIssues.Issue.state(pid)
-      %ApmIssues.Issue{id: 1, options: %{state: :new}, subject: "One", parent_id: nil}
+      %ApmIssues.Issue{id: "One", options: %{state: :new}, subject: "One", parent_id: nil}
 
   """
   def new( id, subject, opts \\ %{} ) do
@@ -49,9 +49,9 @@ defmodule ApmIssues.Issue do
 
   ## Example
 
-      iex> pid = ApmIssues.Issue.new( %{id: 1, subject: "Item One"})
+      iex> pid = ApmIssues.Issue.new( %{id: "Item-One", subject: "Item One"})
       iex> ApmIssues.Issue.state(pid)
-      %ApmIssues.Issue{children: [], id: 1, options: %{}, subject: "Item One", parent_id: nil }
+      %ApmIssues.Issue{children: [], id: "Item-One", options: %{}, subject: "Item One", parent_id: nil }
   """
   def new(pid) when is_pid(pid), do: pid
   def new(_struct =  %{id: id, subject: subject, options: options, parent_id: _parent_id, children: children}) do
@@ -98,8 +98,8 @@ defmodule ApmIssues.Issue do
 
   ## Example
 
-      iex> father_pid = ApmIssues.Issue.new( "father", "Frank" )
-      iex> daughter_pid = ApmIssues.Issue.new( "daughter", "Moon Unit" )
+      iex> father_pid = ApmIssues.Issue.new( "father", "father" )
+      iex> daughter_pid = ApmIssues.Issue.new( "daughter", "daughter" )
       iex> ApmIssues.Issue.add_child(father_pid, daughter_pid)
       iex> { pid, id } = ApmIssues.Issue.children(father_pid) |> hd
       iex> { is_pid(pid), id }
@@ -114,12 +114,12 @@ defmodule ApmIssues.Issue do
 
   ## Example:
 
-      iex> father_pid = ApmIssues.Issue.new( "father", "Frank" )
-      iex> son_pid    = ApmIssues.Issue.new( "son", "Dweezil" )
+      iex> father_pid = ApmIssues.Issue.new( "father", "father" )
+      iex> son_pid    = ApmIssues.Issue.new( "son", "son" )
       iex> ApmIssues.Issue.add_child(father_pid, son_pid)
       iex> { child_pid, _child_id }  = ApmIssues.Issue.children(father_pid) |> hd 
       iex> ApmIssues.Issue.state(child_pid).subject
-      "Dweezil"
+      "son"
 
   """
   def add_child( parent_pid, child_pid ) do

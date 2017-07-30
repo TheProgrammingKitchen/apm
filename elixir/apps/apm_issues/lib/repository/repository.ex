@@ -25,10 +25,13 @@ defmodule ApmIssues.Repository do
   # In current state of development, Issues are always loaded from fixture
   # files. In further versions this function will go away and issues will be
   # loaded lazily
-  defp seed(pid) do
+  def seed(pid) do
+    seed()
+    {:ok, pid} 
+  end
+  def seed() do
     ApmIssues.Repository.drop!
     ApmIssues.Repository.Seed.load()
-    {:ok, pid} 
   end
 
 
@@ -54,7 +57,7 @@ defmodule ApmIssues.Repository do
       iex> ApmIssues.Repository.drop!
       iex> ApmIssues.Repository.count
       0
-      iex> i = ApmIssues.Issue.new(1,"Some Title")
+      iex> i = ApmIssues.Issue.new("Some Title","Some Title")
       iex> ApmIssues.Repository.push(i)
       iex> ApmIssues.Repository.count
       1
@@ -72,9 +75,11 @@ defmodule ApmIssues.Repository do
   Fetch all issues
 
   ## Example:
+      iex> ApmIssues.Repository.drop!
+      iex> ApmIssues.Repository.seed()
       iex> all = ApmIssues.Repository.all()
       iex> Enum.count(all)
-      3
+      4
   """
   def all() do
     GenServer.call(__MODULE__, :all)

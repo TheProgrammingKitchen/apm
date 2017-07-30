@@ -3,12 +3,19 @@ defmodule ApmPx.IssueControllerTest do
   use ApmPx.ConnCase
   use TestHelper
 
+  setup do
+    Application.ensure_all_started(:apm_repository)
+    ApmIssues.Repository.drop!()
+    ApmIssues.Repository.seed()
+    :ok
+  end
+
   test "GET /issues lists all issues", %{conn: conn} do
     session = conn 
               |> login_as("some user", "admin") 
               |> get( "/issues" )
-    assert html_response(session, 200) =~ "Item Number One"
-    assert html_response(session, 200) =~ "Item Number Two With Children"
+    assert html_response(session, 200) =~ "Item-1"
+    assert html_response(session, 200) =~ "Item-2"
   end
 
   test "GET /issues when not logged in shows error", %{conn: conn} do
@@ -20,10 +27,10 @@ defmodule ApmPx.IssueControllerTest do
     session = conn 
               |> login_as("some user", "admin") 
               |> get( "/issues/Item-2" )
-    refute html_response(session, 200) =~ "Item Number One"
-    assert html_response(session, 200) =~ "Item Number Two With Children"
-    assert html_response(session, 200) =~ "Son of item 1"
-    assert html_response(session, 200) =~ "Daughter of item 1"
+    assert html_response(session, 200) =~ "Item-2"
+    assert html_response(session, 200) =~ "Item-2.1"
+    assert html_response(session, 200) =~ "Item-2.2"
+    refute html_response(session, 200) =~ "Item-1"
   end
 
   test "GET /issues/new renders 'new issue form'", %{conn: conn} do
@@ -55,8 +62,6 @@ defmodule ApmPx.IssueControllerTest do
     |> post( "/issues", 
              %{issue: %{ subject: "Issue123", description: "Original text"}} 
            )
-    conn 
-    |> login_as("some user", "admin") 
     |> post( "/issues/Issue123", 
              %{issue: %{ subject: "Issue123", description: "Modified text"}} 
            )

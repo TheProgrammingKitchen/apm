@@ -4,20 +4,20 @@
 [
   {
     "id" : "Item-1",
-    "subject" : "Item Number One"
+    "subject" : "Item-1"
   },
   {
     "id" : "Item-2",
-    "subject" : "Item Number Two With Children",
+    "subject" : "Item-2",
     "children" : [
       { 
         "id" : "Item-2.1",
-        "subject" : "Son of item 1",
+        "subject" : "Item-2.1",
         "parent_id" : "Item-2"
       },
       {
         "id" : "Item-2.2",
-        "subject" : "Daughter of item 1",
+        "subject" : "Item-2.2",
         "parent_id" : "Item-2"
       }
     ]
