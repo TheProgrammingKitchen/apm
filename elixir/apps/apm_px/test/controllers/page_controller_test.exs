@@ -20,14 +20,12 @@ defmodule ApmPx.PageControllerTest do
 
   test "Show README.md on the landing page when logged in", %{conn: conn} do
     session = conn |> login_as("some user", "admin") |> get( "/" )
-    assert html_response(session, 200) =~ "README.md"
-    assert html_response(session, 200) =~ "Links"
+    assert html_response(session, 200) =~ "Jira sux"
+    assert html_response(session, 200) =~ "Project Page"
   end
 
   test "Not show README.md on the landing page when not logged in", %{conn: conn} do
     conn = get conn, "/"
-    refute html_response(conn, 200) =~ "README.md"
-    refute html_response(conn, 200) =~ "Next Step:"
-  end
+    refute html_response(conn, 200) =~ "Jira sux" end
 
 end
