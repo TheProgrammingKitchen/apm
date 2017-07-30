@@ -1,5 +1,7 @@
 defmodule ApmIssues do
-  @moduledoc false
+  @moduledoc"""
+  The Application starts the `ApmIssues.Repository` as a worker.
+  """
 
   use Application
 

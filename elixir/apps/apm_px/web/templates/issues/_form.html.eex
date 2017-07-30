@@ -13,7 +13,7 @@
   <div class="form-actions">
     <%= submit gettext("Submit") %>
   </div>
-<%= end %>
+<% end %>
 
 <p>Debug</p>
 <code>

@@ -1,13 +1,19 @@
 defmodule ApmUser do
   @moduledoc """
-  Documentation for ApmUser.
+  `ApmUser` is a very simple module by now. There is no 
+  repository based implementation yet and any combination
+  of user/password is accepted at login!
+
+  Although the modules defines possible `Role`s for the application,
+  thus we can check against their functional permissions.
   """
 
   alias ApmUser.Role
 
   @doc """
-  Roles are configured in config. Default role is :guest
+  Default role is :guest
 
+  FIXME: Roles should be defined in config
 
   ## Examples
 

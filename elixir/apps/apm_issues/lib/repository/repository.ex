@@ -2,10 +2,10 @@ defmodule ApmIssues.Repository do
   require Logger
 
   @moduledoc """
-  The Issue-repository is a `GenServer` which holds the structure `%{ issues: [] }`
-  with the list of known issues in the form of a tuple `{ pid, id }`
+  The Issue-repository is a `GenServer` which holds the structure 
+  `%{ issues: [] }` with the list of known issues in the form of a 
+  tuple `{ pid, id }`
   """
-
   use GenServer
   alias ApmIssues.Issue
 
@@ -13,7 +13,10 @@ defmodule ApmIssues.Repository do
 
   @doc """
   Start repository with an 'empty' state. No need to call this function
-  because it will be started as a worker by `ApmIssues` application
+  because it will be started as a worker by `ApmIssues` application.
+
+  When `start_link()` is called twice it returns the already running
+  server.
   """
   def start_link() do
     case GenServer.start_link(__MODULE__, %{ issues: [] , refs: []}, name: __MODULE__) do
@@ -22,9 +25,11 @@ defmodule ApmIssues.Repository do
     end
   end
 
-  # In current state of development, Issues are always loaded from fixture
-  # files. In further versions this function will go away and issues will be
-  # loaded lazily
+  @doc"""
+  In current state of development, Issues are always loaded from fixture
+  files. In further versions this function will go away and issues will be
+  loaded lazily from an `ApmIssues.Adapter`.
+  """
   def seed(pid) do
     seed()
     {:ok, pid} 
@@ -72,14 +77,17 @@ defmodule ApmIssues.Repository do
 
 
   @doc"""
-  Fetch all issues
+  Fetch all issues. Returns a list of tuples in the form
+
+      [{#PID<0.479.0>, "Item-2.2"}, {#PID<0.478.0>, "Item-2.1"},
+       {#PID<0.477.0>, "Item-2"}, {#PID<0.476.0>, "Item-1"}]
 
   ## Example:
       iex> ApmIssues.Repository.drop!
       iex> ApmIssues.Repository.seed()
       iex> all = ApmIssues.Repository.all()
-      iex> Enum.count(all)
-      4
+      iex> Enum.map(all, fn({_p,i}) -> i end)
+      ["Item-2.2", "Item-2.1", "Item-2", "Item-1"]
   """
   def all() do
     GenServer.call(__MODULE__, :all)
@@ -87,10 +95,11 @@ defmodule ApmIssues.Repository do
 
   @doc"""
   Fetch Issues with parent_id = nil
+
   ## Example:
       iex> roots = ApmIssues.Repository.root_issues()
-      iex> Enum.count(roots)
-      2
+      iex> Enum.map(roots, fn({_p,i}) -> i end)
+      ["Item-2", "Item-1"]
   """
   def root_issues() do
     GenServer.call(__MODULE__, :root_issues)
@@ -104,9 +113,9 @@ defmodule ApmIssues.Repository do
   ## Example:
       
       iex> ApmIssues.Repository.drop!
-      iex> ApmIssues.Issue.new(1,"Some Title") |> ApmIssues.Repository.push()
-      iex> ApmIssues.Repository.find_by_id(1) |> ApmIssues.Issue.state
-      %ApmIssues.Issue{ id: 1, subject: "Some Title", options: %{}, children: [] }
+      iex> ApmIssues.Issue.new("ID","ID") |> ApmIssues.Repository.push()
+      iex> ApmIssues.Repository.find_by_id("ID") |> ApmIssues.Issue.state
+      %ApmIssues.Issue{ id: "ID", subject: "ID", options: %{}, children: [] }
   """
   def find_by_id(id) do
     GenServer.call(__MODULE__, {:find_by_id, id})

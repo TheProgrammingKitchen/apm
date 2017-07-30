@@ -3,7 +3,9 @@
 ## Links
 
   * [Github][]
-  * [Pivotal Tracker][]
+  * [Project Page][]
+  * [Scrum Board][]
+  * [Pivotal Tracker][] _obsolete_
 
 This is the ./elixir subfolder of APM.
 If you're new to the project, please start with README.md in the root-path
@@ -67,4 +69,5 @@ The _Phoenix-Frontend_ application
 
 [Github]: https://github.com/iboard/apm
 [Pivotal Tracker]: https://www.pivotaltracker.com/n/projects/2079917
-
+[Project Page]: https://theprogrammingkitchen.github.io/apm/
+[Scrum Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128

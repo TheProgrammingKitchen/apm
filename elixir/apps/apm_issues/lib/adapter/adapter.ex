@@ -1,8 +1,15 @@
 defmodule ApmIssues.Adapter do
+  @moduledoc"""
+  The Adapter is reponsible to load issues from somewhere
+  and push it to the Repository.
+
+  > FIXME: This should become a Protocol!
+  """
 
   @doc"""
   Issues is a list of structures going to be pushed to the
-  repository. The function returns a list of PIDs
+  repository. The function returns a list of PIDs.
+
   """
   def push issues do
     issues

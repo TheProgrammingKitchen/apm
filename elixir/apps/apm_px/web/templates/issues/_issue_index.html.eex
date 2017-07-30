@@ -7,7 +7,7 @@
     <b><%= link "edit", to: "/issues/#{@issue.id}/edit", id: "edit-#{@issue.id}" %></b></br>
     <%= if @issue.parent_id do %>
       <b>Parent ID:</b> <%= link @issue.parent_id, to: "/issues/#{@issue.parent_id}" %>
-    <%= end %>
+    <% end %>
     <code>
       <%= inspect @issue.options %>
     </code>
