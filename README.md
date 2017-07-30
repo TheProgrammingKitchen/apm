@@ -48,7 +48,9 @@ Files for the [Github.io pages] of this project.
   * run the tests in path `elixir` with `mix test --trace`
   * run only the unit-tests without E2E `mix test --trace --exclude hound`
 
-## Start development- and testing-environment with tmux and fish-shell
+## _tmux_ and _fish shell_
+
+Start development- and testing-environment with tmux and fish-shell.
 
 If you a TMUX-user, you can start all of the stuff mentioned above with
 a single command `apm.tmux`
@@ -70,3 +72,4 @@ a single command `apm.tmux`
 [ZenHub Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128
 [Project Page]: https://theprogrammingkitchen.github.io/apm/
 [Github.io pages]: https://theprogrammingkitchen.github.io/apm/
+
