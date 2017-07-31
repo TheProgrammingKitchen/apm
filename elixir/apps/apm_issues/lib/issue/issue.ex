@@ -1,10 +1,10 @@
 defmodule ApmIssues.Issue do
   @moduledoc """
-  Define `%{ApmIssues.Issue}` and functions to modify it.
+    Define `%{ApmIssues.Issue}` and functions to modify it.
 
-  In function new, an Agent is started to hold the state of
-  an Issue. All other functions take the pid, returned by `new`,
-  as their first argument.
+    In function new, an Agent is started to hold the state of
+    an Issue. All other functions take the pid, returned by `new`,
+    as their first argument.
   """
 
   alias ApmIssues.{Repository}
@@ -14,9 +14,9 @@ defmodule ApmIssues.Issue do
   defstruct id: nil, subject: "", options: %{}, children: [], parent_id: nil
 
   @doc """
-  * `id` - Unique ID of the issue (mandatory when saving)
-  * `subject` - Any string (mandatory but can be an empty string)
-  * `options` - optional and not specified yet
+    * `id` - Unique ID of the issue (mandatory when saving)
+    * `subject` - Any string (mandatory but can be an empty string)
+    * `options` - optional and not specified yet
 
   ## Example:
 
@@ -34,6 +34,17 @@ defmodule ApmIssues.Issue do
       %ApmIssues.Issue{ id: id, subject: subject, options: opts }
     end)
     Repository.push!(pid)
+  end
+
+  @doc """
+    Creates a new issue and assigns a UUID
+  """
+  def create(subject, opts \\ %{} ) do
+    {:ok, pid} = Agent.start_link(fn ->
+      %ApmIssues.Issue{ id: generate_uuid(), subject: subject, options: opts }
+    end)
+    Repository.push!(pid)
+    pid
   end
 
   @doc"""
@@ -91,6 +102,13 @@ defmodule ApmIssues.Issue do
   """
   def state(pid) do
     Agent.get(pid, fn issue -> issue end)
+  end
+
+  @doc"""
+    Returns the Issue.id of a given pid
+  """
+  def id(pid) do
+    state(pid).id
   end
 
   @doc """
@@ -165,5 +183,9 @@ defmodule ApmIssues.Issue do
     Agent.update(child_pid, fn child ->
       Map.merge(child, %{parent_id: parent_id})
     end)
+  end
+
+  defp generate_uuid() do
+    UUID.uuid1()
   end
 end
