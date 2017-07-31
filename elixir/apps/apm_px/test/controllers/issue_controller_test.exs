@@ -26,7 +26,7 @@ defmodule ApmPx.IssueControllerTest do
   test "GET /issues/item-2 renderes only item-2 with children", %{conn: conn} do
     session = conn 
               |> login_as("some user", "admin") 
-              |> get( "/issues/Item-2" )
+              |> get( "/issues/12345678-1234-1234-1234-123456789ab2" )
     assert html_response(session, 200) =~ "Item-2"
     assert html_response(session, 200) =~ "Item-2.1"
     assert html_response(session, 200) =~ "Item-2.2"

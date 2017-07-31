@@ -15,8 +15,9 @@ defmodule ApmIssuesRepositoryTest do
   end
 
   test "Find issues by id" do
-    pid = Repository.find_by_id("Item-1")
-    assert %Issue{id: "Item-1", subject: "Item-1", options: %{}} == Issue.state(pid)
+    id = "12345678-1234-1234-1234-123456789ab1"
+    pid = Repository.find_by_id(id)
+    assert %Issue{id: id, subject: "Item-1", options: %{}} == Issue.state(pid)
   end
 
   test "Find not existing issue returns :not_found" do

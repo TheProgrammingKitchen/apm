@@ -79,15 +79,15 @@ defmodule ApmIssues.Repository do
   @doc"""
   Fetch all issues. Returns a list of tuples in the form
 
-      [{#PID<0.479.0>, "Item-2.2"}, {#PID<0.478.0>, "Item-2.1"},
-       {#PID<0.477.0>, "Item-2"}, {#PID<0.476.0>, "Item-1"}]
-
   ## Example:
       iex> ApmIssues.Repository.drop!
       iex> ApmIssues.Repository.seed()
       iex> all = ApmIssues.Repository.all()
       iex> ApmIssues.Repository.ids(all)
-      ["Item-2.2", "Item-2.1", "Item-2", "Item-1"]
+      ["12345678-1234-1234-1234-123456789a22",
+      "12345678-1234-1234-1234-123456789a21",
+      "12345678-1234-1234-1234-123456789ab2",
+      "12345678-1234-1234-1234-123456789ab1"]
   """
   def all() do
     GenServer.call(__MODULE__, :all)
@@ -99,7 +99,8 @@ defmodule ApmIssues.Repository do
   ## Example:
       iex> roots = ApmIssues.Repository.root_issues()
       iex> ApmIssues.Repository.ids(roots)
-      ["Item-2", "Item-1"]
+      ["12345678-1234-1234-1234-123456789ab2",
+      "12345678-1234-1234-1234-123456789ab1"]
   """
   def root_issues() do
     GenServer.call(__MODULE__, :root_issues)
