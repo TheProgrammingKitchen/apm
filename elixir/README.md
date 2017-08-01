@@ -67,7 +67,7 @@ The _Phoenix-Frontend_ application
 
 
 
-[Github]: https://github.com/iboard/apm
+[Github]: https://github.com/TheProgrammingKitchen/apm
 [Pivotal Tracker]: https://www.pivotaltracker.com/n/projects/2079917
 [Project Page]: https://theprogrammingkitchen.github.io/apm/
 [Scrum Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128
