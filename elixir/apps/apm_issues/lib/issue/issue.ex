@@ -154,11 +154,11 @@ defmodule ApmIssues.Issue do
   ## Example:
 
       iex> ApmIssues.Issue.new("original", "original", %{ description: "original" })
-      iex> pid = ApmIssues.Issue.update("original", "original", %{ description: "Modified" }) 
+      iex> pid = ApmIssues.Issue.update("original", "modified", %{ description: "Modified" }) 
       iex> ApmIssues.Issue.state(pid)
       %ApmIssues.Issue{children: [], id: "original",
                         options: %{description: "Modified"}, parent_id: nil,
-                        subject: "original"}
+                        subject: "modified"}
   """
   def update( id, subject, opts \\ %{} ) do
     case Repository.find_by_id(id) do
@@ -166,9 +166,9 @@ defmodule ApmIssues.Issue do
       {pid, id} -> update(pid, id, subject, opts)
     end
   end
-  def update(pid, _id, _subject, opts) do
+  def update(pid, _id, subject, opts) do
     Agent.update(pid, fn issue ->
-      Map.merge issue, %{ options: opts }
+      Map.merge issue, %{ subject: subject, options: opts }
     end)
     pid
   end

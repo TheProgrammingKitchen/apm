@@ -39,8 +39,9 @@ defmodule ApmPx.IssuesController do
   POST /issues Creates a new issue
   """
   def create(conn, params) do
-    {id,subject,options} = cast(params["issue"])
-    ApmIssues.Issue.new( id, subject, options )
+    {subject,options} = cast(params["issue"])
+    id = ApmIssues.Issue.create( subject, options )
+         |> ApmIssues.Issue.id()
     conn 
       |> put_flash(:success, gettext("Issue successfully created"))
       |> redirect(to: "/issues/#{id}")
@@ -57,11 +58,11 @@ defmodule ApmPx.IssuesController do
   Update issue
   """
   def update(conn, params) do
-    {id,subject,options} = cast(params["issue"])
-    ApmIssues.Issue.update( id, subject, options )
+    {subject,options} = cast(params["issue"])
+    ApmIssues.Issue.update( params["id"], subject, options )
     conn 
       |> put_flash(:success, gettext("Issue successfully updated"))
-      |> redirect(to: "/issues/#{id}")
+      |> redirect(to: "/issues/#{params['id']}")
   end
 
 
@@ -71,14 +72,9 @@ defmodule ApmPx.IssuesController do
 
   defp cast(params) do
     subject = params["subject"]
-    id = make_id(subject)
     options = Map.drop(params, ["subject"])
-    {id, subject, options}
+    {subject, options}
   end
 
-  defp make_id(string) do
-    string
-    |> String.replace(" ","-")
-  end
 end
 

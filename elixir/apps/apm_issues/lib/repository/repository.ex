@@ -123,6 +123,22 @@ defmodule ApmIssues.Repository do
   end
 
   @doc"""
+  Find an issue by it's id
+  returns the pid of the issue if found
+
+  ## Example:
+      
+      iex> ApmIssues.Repository.drop!
+      iex> ApmIssues.Issue.create("Subject") 
+      iex> [{pid, _id}|_] = ApmIssues.Repository.find_by_subject("Subject") 
+      iex> ApmIssues.Issue.state(pid).subject
+      "Subject"
+  """
+  def find_by_subject(subject) do
+    GenServer.call(__MODULE__, {:find_by_subject, subject})
+  end
+
+  @doc"""
   Empty/clear the repository
   """
   def drop! do
@@ -153,6 +169,12 @@ defmodule ApmIssues.Repository do
   end
 
   @doc false
+  def handle_call({:find_by_subject, subject}, _from, state) do
+    issues = find_issue(state,{ :subject, subject} )
+    {:reply, issues, state}
+  end
+
+  @doc false
   def handle_cast({:push, issue}, %{issues: issues, refs: refs}) do
     id = Issue.state(issue).id
     if Enum.member?(issues, {issue, id}) do 
@@ -177,6 +199,14 @@ defmodule ApmIssues.Repository do
   # ------------------------------------------------------------
   # Private helpers
   #-------------------------------------------------------------
+
+  defp find_issue(state, {:subject, subject}) do
+    result = state.issues |> 
+             Enum.filter(fn({pid,_fid}) -> 
+               ApmIssues.Issue.state(pid).subject == subject 
+             end)
+    result
+  end
 
   defp find_issue(state, id) do
     result = state.issues |> Enum.filter(fn({_pid,fid}) -> fid == id end)

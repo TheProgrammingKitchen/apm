@@ -50,23 +50,28 @@ defmodule ApmPx.IssueControllerTest do
              %{issue: %{ subject: "New Issue", description: "Some text"}} 
            )
 
-    issue = ApmIssues.Repository.find_by_id("New-Issue")
-    assert ApmIssues.Issue.state(issue).id == "New-Issue"
+    issue = ApmIssues.Repository.find_by_subject("New Issue") |> hd
+    assert String.match?(ApmIssues.Issue.state(issue).id, ~r/^[0-9a-f]{8}-/)
     assert ApmIssues.Issue.state(issue).subject == "New Issue"
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Some text"}
   end
 
   test "POST /issues/:id updates an existing issue", %{conn: conn} do
     conn 
-    |> login_as("some user", "admin") 
-    |> post( "/issues", 
-             %{issue: %{ subject: "Issue123", description: "Original text"}} 
-           )
-    |> post( "/issues/Issue123", 
-             %{issue: %{ subject: "Issue123", description: "Modified text"}} 
-           )
-    issue = ApmIssues.Repository.find_by_id("Issue123")
-    assert ApmIssues.Issue.state(issue).id == "Issue123"
+      |> login_as("some user", "admin") 
+      |> post( "/issues", 
+               %{issue: %{ subject: "Issue123", description: "Original text"}} 
+             )
+    {_pid, id} = (ApmIssues.Repository.find_by_subject("Issue123")) |> hd
+
+    conn 
+      |> login_as("some user", "admin") 
+      |> post( "/issues/#{id}", 
+               %{issue: %{ subject: "Issue123", description: "Modified text"}} 
+             )
+    issue = ApmIssues.Repository.find_by_subject("Issue123") |> hd
+
+    assert String.match?(ApmIssues.Issue.state(issue).id, ~r/^[0-9a-f]{8}-/)
     assert ApmIssues.Issue.state(issue).subject == "Issue123"
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Modified text"}
   end
