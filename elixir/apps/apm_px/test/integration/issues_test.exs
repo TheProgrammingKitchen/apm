@@ -34,18 +34,20 @@ defmodule ApmPx.E2EIssuesTest do
 
     @tag :hound
     test "Edit an issue" do
+      ApmIssues.Repository.drop!()
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues/new")
-      fill_field({:name, "issue[subject]"}, "A-1-1")
+      fill_field({:name, "issue[subject]"}, "New Subject")
       fill_field({:name, "issue[description]"}, "Original Description")
       submit_element({:name, "issue[subject]"})
-      
-      click({:id, "edit-A-1-1"})
+      element_id = find_element(:link_text, "edit")
+      click(element_id)
+      fill_field({:name, "issue[subject]"}, "Modified Subject")
       fill_field({:name, "issue[description]"}, "A Modified Issue")
       submit_element({:name, "issue[subject]"})
 
       assert visible_text({:class, "alert-success"}) =~ "Issue successfully updated"
-      assert visible_text({:class, "issue-index"}) =~ "A-1-1"
+      assert visible_text({:class, "issue-index"}) =~ "Modified Subject"
       assert visible_text({:class, "issue-index"}) =~ "A Modified Issue"
     end
   end

@@ -1,5 +1,7 @@
 <%= form_for @conn, @path, [class: "form-default", as: "issue" ], fn(f) -> %>
 
+  <%= hidden_input f, :uuid, name: "issue_id", value: id(@issue) %>
+
   <div class="field-group">
     <%= label f, :subject, gettext("Subject") %>
     <%= text_input f, :subject, value: subject(@issue), class: "input-field" %>

@@ -79,15 +79,15 @@ defmodule ApmIssues.Repository do
   @doc"""
   Fetch all issues. Returns a list of tuples in the form
 
-      [{#PID<0.479.0>, "Item-2.2"}, {#PID<0.478.0>, "Item-2.1"},
-       {#PID<0.477.0>, "Item-2"}, {#PID<0.476.0>, "Item-1"}]
-
   ## Example:
       iex> ApmIssues.Repository.drop!
       iex> ApmIssues.Repository.seed()
       iex> all = ApmIssues.Repository.all()
       iex> ApmIssues.Repository.ids(all)
-      ["Item-2.2", "Item-2.1", "Item-2", "Item-1"]
+      ["12345678-1234-1234-1234-123456789a22",
+      "12345678-1234-1234-1234-123456789a21",
+      "12345678-1234-1234-1234-123456789ab2",
+      "12345678-1234-1234-1234-123456789ab1"]
   """
   def all() do
     GenServer.call(__MODULE__, :all)
@@ -99,7 +99,8 @@ defmodule ApmIssues.Repository do
   ## Example:
       iex> roots = ApmIssues.Repository.root_issues()
       iex> ApmIssues.Repository.ids(roots)
-      ["Item-2", "Item-1"]
+      ["12345678-1234-1234-1234-123456789ab2",
+      "12345678-1234-1234-1234-123456789ab1"]
   """
   def root_issues() do
     GenServer.call(__MODULE__, :root_issues)
@@ -119,6 +120,22 @@ defmodule ApmIssues.Repository do
   """
   def find_by_id(id) do
     GenServer.call(__MODULE__, {:find_by_id, id})
+  end
+
+  @doc"""
+  Find an issue by it's id
+  returns the pid of the issue if found
+
+  ## Example:
+      
+      iex> ApmIssues.Repository.drop!
+      iex> ApmIssues.Issue.create("Subject") 
+      iex> [{pid, _id}|_] = ApmIssues.Repository.find_by_subject("Subject") 
+      iex> ApmIssues.Issue.state(pid).subject
+      "Subject"
+  """
+  def find_by_subject(subject) do
+    GenServer.call(__MODULE__, {:find_by_subject, subject})
   end
 
   @doc"""
@@ -152,6 +169,12 @@ defmodule ApmIssues.Repository do
   end
 
   @doc false
+  def handle_call({:find_by_subject, subject}, _from, state) do
+    issues = find_issue(state,{ :subject, subject} )
+    {:reply, issues, state}
+  end
+
+  @doc false
   def handle_cast({:push, issue}, %{issues: issues, refs: refs}) do
     id = Issue.state(issue).id
     if Enum.member?(issues, {issue, id}) do 
@@ -176,6 +199,14 @@ defmodule ApmIssues.Repository do
   # ------------------------------------------------------------
   # Private helpers
   #-------------------------------------------------------------
+
+  defp find_issue(state, {:subject, subject}) do
+    result = state.issues |> 
+             Enum.filter(fn({pid,_fid}) -> 
+               ApmIssues.Issue.state(pid).subject == subject 
+             end)
+    result
+  end
 
   defp find_issue(state, id) do
     result = state.issues |> Enum.filter(fn({_pid,fid}) -> fid == id end)

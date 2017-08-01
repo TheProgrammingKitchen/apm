@@ -67,6 +67,11 @@ defmodule ApmPx.IssuesView do
     issue.subject || ""
   end
 
+  @doc "Format id"
+  def id(issue) do
+    issue.id || ""
+  end
+
   @doc "Format description"
   def description(issue) do
     issue.options["description"] || ""

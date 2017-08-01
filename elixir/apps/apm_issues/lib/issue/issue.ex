@@ -1,10 +1,10 @@
 defmodule ApmIssues.Issue do
   @moduledoc """
-  Define `%{ApmIssues.Issue}` and functions to modify it.
+    Define `%{ApmIssues.Issue}` and functions to modify it.
 
-  In function new, an Agent is started to hold the state of
-  an Issue. All other functions take the pid, returned by `new`,
-  as their first argument.
+    In function new, an Agent is started to hold the state of
+    an Issue. All other functions take the pid, returned by `new`,
+    as their first argument.
   """
 
   alias ApmIssues.{Repository}
@@ -14,9 +14,9 @@ defmodule ApmIssues.Issue do
   defstruct id: nil, subject: "", options: %{}, children: [], parent_id: nil
 
   @doc """
-  * `id` - Unique ID of the issue (mandatory when saving)
-  * `subject` - Any string (mandatory but can be an empty string)
-  * `options` - optional and not specified yet
+    * `id` - Unique ID of the issue (mandatory when saving)
+    * `subject` - Any string (mandatory but can be an empty string)
+    * `options` - optional and not specified yet
 
   ## Example:
 
@@ -34,6 +34,17 @@ defmodule ApmIssues.Issue do
       %ApmIssues.Issue{ id: id, subject: subject, options: opts }
     end)
     Repository.push!(pid)
+  end
+
+  @doc """
+    Creates a new issue and assigns a UUID
+  """
+  def create(subject, opts \\ %{} ) do
+    {:ok, pid} = Agent.start_link(fn ->
+      %ApmIssues.Issue{ id: generate_uuid(), subject: subject, options: opts }
+    end)
+    Repository.push!(pid)
+    pid
   end
 
   @doc"""
@@ -93,6 +104,13 @@ defmodule ApmIssues.Issue do
     Agent.get(pid, fn issue -> issue end)
   end
 
+  @doc"""
+    Returns the Issue.id of a given pid
+  """
+  def id(pid) do
+    state(pid).id
+  end
+
   @doc """
   Return a list of tuples { pid, id } for all children
 
@@ -136,11 +154,11 @@ defmodule ApmIssues.Issue do
   ## Example:
 
       iex> ApmIssues.Issue.new("original", "original", %{ description: "original" })
-      iex> pid = ApmIssues.Issue.update("original", "original", %{ description: "Modified" }) 
+      iex> pid = ApmIssues.Issue.update("original", "modified", %{ description: "Modified" }) 
       iex> ApmIssues.Issue.state(pid)
       %ApmIssues.Issue{children: [], id: "original",
                         options: %{description: "Modified"}, parent_id: nil,
-                        subject: "original"}
+                        subject: "modified"}
   """
   def update( id, subject, opts \\ %{} ) do
     case Repository.find_by_id(id) do
@@ -148,9 +166,9 @@ defmodule ApmIssues.Issue do
       {pid, id} -> update(pid, id, subject, opts)
     end
   end
-  def update(pid, _id, _subject, opts) do
+  def update(pid, _id, subject, opts) do
     Agent.update(pid, fn issue ->
-      Map.merge issue, %{ options: opts }
+      Map.merge issue, %{ subject: subject, options: opts }
     end)
     pid
   end
@@ -165,5 +183,9 @@ defmodule ApmIssues.Issue do
     Agent.update(child_pid, fn child ->
       Map.merge(child, %{parent_id: parent_id})
     end)
+  end
+
+  defp generate_uuid() do
+    UUID.uuid1()
   end
 end
