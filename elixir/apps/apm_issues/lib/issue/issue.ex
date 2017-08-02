@@ -55,6 +55,17 @@ defmodule ApmIssues.Issue do
     Agent.stop(pid)
   end
 
+  @doc"""
+  Calls drop_with_children for each child recursivly and then drops its
+  own Agent.
+  """
+  def drop_with_children(pid) do
+    Enum.each(children(pid), fn({cpid,_cid}) ->
+      drop_with_children(cpid)
+    end)
+    Agent.stop(pid)
+  end
+
   @doc """
   Issues may be initialized by simple structs when read from file-adapter
 

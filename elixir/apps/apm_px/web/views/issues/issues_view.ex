@@ -7,13 +7,13 @@ defmodule ApmPx.IssuesView do
   @doc"""
   Render all root-issues recursively
   """
-  def render_issues_index(_conn) do
+  def render_issues_index(conn) do
     Repository.root_issues
-    |> Enum.map( fn(pid) -> render_issue(pid) end)
+    |> Enum.map( fn(pid) -> render_issue(conn,pid) end)
   end
-  defp render_issue({pid, id}) do
+  defp render_issue(conn,{pid, id}) do
     issue = ApmIssues.Issue.state({pid, id})
-    render("_issue_index.html", id: id, pid: pid, issue: issue)
+    render("_issue_index.html", conn: conn, id: id, pid: pid, issue: issue)
   end
 
   @doc"""
@@ -25,7 +25,7 @@ defmodule ApmPx.IssuesView do
     pid = Repository.find_by_id(item_id)
     issue = ApmIssues.Issue.state({pid, item_id})
 
-    render("_issue_index.html", id: item_id, pid: pid, issue: issue)
+    render("_issue_index.html", conn: conn, id: item_id, pid: pid, issue: issue)
   end
 
   @doc"""
@@ -43,9 +43,9 @@ defmodule ApmPx.IssuesView do
   @doc"""
   Render children of an issue recursively
   """
-  def render_children(parent_pid) do
+  def render_children(conn,parent_pid) do
     ApmIssues.Issue.children(parent_pid)
-    |> Enum.map( fn(pid) -> render_issue(pid) end)
+    |> Enum.map( fn(pid) -> render_issue(conn,pid) end)
   end
 
   @doc"""

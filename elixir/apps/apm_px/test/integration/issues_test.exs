@@ -1,5 +1,6 @@
 defmodule ApmPx.E2EIssuesTest do
   use ApmPx.SessionHelper
+  use ApmPx.ConnCase, async: false
 
   describe "E2E Issues" do
 

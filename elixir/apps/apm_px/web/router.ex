@@ -27,9 +27,10 @@ defmodule ApmPx.Router do
     # issues
     get "/issues"          , IssuesController , :index
     post "/issues"         , IssuesController , :create
-    post "/issues/:id"      , IssuesController , :update
+    post "/issues/:id"     , IssuesController , :update
     get "/issues/new"      , IssuesController , :new
     get "/issues/:id"      , IssuesController , :show
+    delete "/issues/:id"   , IssuesController , :delete
     get "/issues/:id/edit" , IssuesController , :edit
   end
 
