@@ -21,9 +21,9 @@ Watch out `README.md` in each of the apps directories.
 
 ### Update dependencies
 
-    mix deps.clean
+    mix deps.clean --all
     mix deps.get
-    mix deps.update
+    mix deps.update --all
 
 ### Generate documentation
 

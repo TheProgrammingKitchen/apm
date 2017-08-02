@@ -76,6 +76,20 @@ defmodule ApmPx.IssueControllerTest do
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Modified text"}
   end
 
+  test "DELETE /issues/:id deletes an issue and its children", %{conn: conn} do
+    ApmIssues.Repository.drop!()
+    ApmIssues.Repository.seed()
+    {pid, id} = (ApmIssues.Repository.find_by_subject("Item-2")) |> hd
+    assert id == "12345678-1234-1234-1234-123456789ab2"
+    children = ApmIssues.Issue.children(pid)
+    assert Enum.count(children) == 2
+    cnt = ApmIssues.Repository.count
 
+    conn
+      |> delete( "/issues/#{id}" )
+
+    assert ApmIssues.Repository.find_by_id(id) == :not_found
+    assert ApmIssues.Repository.count == cnt - 3
+  end
 
 end

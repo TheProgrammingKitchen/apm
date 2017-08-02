@@ -2,13 +2,13 @@ defmodule ApmPx.SessionHelper do
   defmacro __using__(_opts) do
     quote do
       use ExUnit.Case
-      use ApmPx.ConnCase, async: true
       use Hound.Helpers
 
       hound_session()
 
       setup do
         Application.ensure_all_started(:apm_repository)
+        ApmIssues.Repository.drop!()
         :ok
       end
 

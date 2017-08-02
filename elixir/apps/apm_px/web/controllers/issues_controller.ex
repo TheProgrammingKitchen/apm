@@ -65,6 +65,17 @@ defmodule ApmPx.IssuesController do
       |> redirect(to: "/issues/#{params['id']}")
   end
 
+  @doc """
+  Deleat an issue and its children
+  """
+  def delete(conn, params) do
+    {pid, _id} = ApmIssues.Repository.find_by_id(params["id"])
+    ApmIssues.Issue.drop_with_children(pid)
+    conn
+      |> put_flash(:success, gettext("Issue deleted"))
+      |> redirect(to: issues_path(conn, :index))
+  end
+
 
 
   ### Private helpers ########################################
