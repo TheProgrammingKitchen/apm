@@ -34,6 +34,21 @@ defmodule ApmPx.E2EIssuesTest do
     end
 
     @tag :hound
+    test "Add sub item" do
+      ApmIssues.Repository.seed
+
+      login_as("user", "developer")
+      navigate_to("http://localhost:4000/issues")
+
+      element_id = find_element(:id, "new-12345678-1234-1234-1234-123456789ab2")
+      click(element_id)
+      fill_field({:name, "issue[subject]"}, "A New SubTask")
+      submit_element({:name, "issue[subject]"})
+
+      assert visible_text({:class, "alert-success"}) =~ "Issue successfully created"
+    end
+
+    @tag :hound
     test "Edit an issue" do
       ApmIssues.Repository.drop!()
       login_as("user", "developer")
