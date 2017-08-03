@@ -31,17 +31,23 @@ defmodule ApmPx.IssuesController do
   @doc """
   Show form for new Issue & submit to `POST /issues`
   """
-  def new(conn, _params) do
-    render conn, "new.html"
+  def new(conn, params) do
+    render conn, "new.html", parent_id: params["id"]
   end
   
   @doc """
   POST /issues Creates a new issue
   """
   def create(conn, params) do
-    {subject,options} = cast(params["issue"])
-    id = ApmIssues.Issue.create( subject, options )
-         |> ApmIssues.Issue.id()
+    {subject,options,parent} = cast(params["issue"])
+    pid = ApmIssues.Issue.create( subject, Map.drop(options,["parent_id"]) )
+    id  = pid |> ApmIssues.Issue.id()
+
+    if parent do
+      {parent_pid,_parent_id} = ApmIssues.Repository.find_by_id(parent)
+      ApmIssues.Issue.add_child(parent_pid,pid)
+    end
+
     conn 
       |> put_flash(:success, gettext("Issue successfully created"))
       |> redirect(to: "/issues/#{id}")
@@ -58,7 +64,7 @@ defmodule ApmPx.IssuesController do
   Update issue
   """
   def update(conn, params) do
-    {subject,options} = cast(params["issue"])
+    {subject,options,_parent_id} = cast(params["issue"])
     ApmIssues.Issue.update( params["id"], subject, options )
     conn 
       |> put_flash(:success, gettext("Issue successfully updated"))
@@ -83,8 +89,8 @@ defmodule ApmPx.IssuesController do
 
   defp cast(params) do
     subject = params["subject"]
-    options = Map.drop(params, ["subject"])
-    {subject, options}
+    options =  Map.drop(params, ["subject"])
+    {subject, options, params["parent_id"]}
   end
 
 end

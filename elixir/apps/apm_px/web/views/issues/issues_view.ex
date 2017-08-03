@@ -77,4 +77,11 @@ defmodule ApmPx.IssuesView do
     issue.options["description"] || ""
   end
 
+  @doc "Get title of a given id"
+  def subject_for_id(id) do
+    s = ApmIssues.Repository.find_by_id(id)
+        |> ApmIssues.Issue.state()
+    s.subject
+  end
+
 end

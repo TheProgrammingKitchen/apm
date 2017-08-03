@@ -30,6 +30,7 @@ defmodule ApmPx.Router do
     post "/issues/:id"     , IssuesController , :update
     get "/issues/new"      , IssuesController , :new
     get "/issues/:id"      , IssuesController , :show
+    get "/issues/:parent_id/new", IssuesController , :new, as: :new_child
     delete "/issues/:id"   , IssuesController , :delete
     get "/issues/:id/edit" , IssuesController , :edit
   end

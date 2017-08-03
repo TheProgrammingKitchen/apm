@@ -1,5 +1,13 @@
 <%= form_for @conn, @path, [class: "form-default", as: "issue" ], fn(f) -> %>
 
+  <%= if @conn.params["parent_id"] do %>
+    <h2>
+      <%= gettext "Add Sub Item for %{parent}", 
+          parent: subject_for_id(@conn.params["parent_id"]) %>
+    </h2>
+    <%= hidden_input f, :parent_id, name: "issue[parent_id]", value: @conn.params["parent_id"] %>
+  <% end %>
+
   <%= hidden_input f, :uuid, name: "issue_id", value: id(@issue) %>
 
   <div class="field-group">
@@ -17,7 +25,13 @@
   </div>
 <% end %>
 
-<p>Debug</p>
-<code>
+<h3>Debug</h3>
+
+PARAMS
+<pre>
+  <%= inspect(@conn.params) %>
+</pre>
+ISSUE
+<pre>
   <%= inspect(@issue) %>
-</code>
+</pre>

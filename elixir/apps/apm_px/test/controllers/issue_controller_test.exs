@@ -92,4 +92,31 @@ defmodule ApmPx.IssueControllerTest do
     assert ApmIssues.Repository.count == cnt - 3
   end
 
+  test "GET /issues/:parent_id/new renders the form with parent field", %{conn: conn} do
+    ApmIssues.Repository.drop!()
+    ApmIssues.Repository.seed()
+    {_pid, parent_id} = (ApmIssues.Repository.find_by_subject("Item-2")) |> hd
+    
+    session = conn 
+              |> login_as("some user", "admin") 
+              |> get( ApmPx.Router.Helpers.new_child_path(conn,:new, parent_id) )
+
+    assert html_response(session, 200) =~ "Add Sub Item for Item-2"
+  end
+
+  test "POST /issues/ with parent_id creates a new child", %{conn: conn} do
+    parent = ApmIssues.Repository.find_by_id("12345678-1234-1234-1234-123456789ab2")
+             |> ApmIssues.Issue.state
+    before_count = Enum.count(parent.children)
+
+    conn 
+    |> login_as("some user", "admin") 
+    |> post( "/issues", 
+             %{issue: %{parent_id: "12345678-1234-1234-1234-123456789ab2", subject: "Sub Issue", description: "New Child"}} 
+           )
+
+    issue = ApmIssues.Repository.find_by_id("12345678-1234-1234-1234-123456789ab2") 
+    assert ApmIssues.Issue.state(issue).children |> Enum.count  == before_count + 1
+  end
+
 end
