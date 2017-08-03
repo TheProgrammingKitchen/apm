@@ -74,7 +74,12 @@ defmodule ApmPx.IssuesView do
 
   @doc "Format description"
   def description(issue) do
-    issue.options["description"] || ""
+    (issue.options["description"] || "")
+  end
+  def description(issue, :markdown) do
+    description(issue)
+      |> Earmark.as_html!
+      |> raw
   end
 
   @doc "Get title of a given id"

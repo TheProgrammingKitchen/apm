@@ -1,24 +1,38 @@
 <div class="issue-index">
+
+  <div class="issue-links">
+    <ul class="link-buttons">
+      <li><%= link "edit", to: "/issues/#{@issue.id}/edit", id: "edit-#{@issue.id}" %></li>
+      <li><%= link "add sub task", to: "/issues/#{@issue.id}/new", id: "new-#{@issue.id}" %></li>
+      <li><%= link "delete", to: issues_path(@conn,:delete,@issue.id), method: :delete, id: "delete-#{@issue.id}" %></li>
+    </ul>
+  </div>
+
   <h2><%= @issue.subject %></h2>
 
-  <p>
-    <b>PID:</b> <%= inspect @pid %></br>
-    <b>ID:</b> <%= link @issue.id, to: "/issues/#{@issue.id}" %></br>
-    <b><%= link "edit", to: "/issues/#{@issue.id}/edit", id: "edit-#{@issue.id}" %></b></br>
-    <b><%= link "add sub task", to: "/issues/#{@issue.id}/new", id: "new-#{@issue.id}" %></b></br>
-    <b><%= link "delete", to: issues_path(@conn,:delete,@issue.id), method: :delete, id: "delete-#{@issue.id}" %></b></br>
+  <ul class="attribute">
+    <li><label>PID:</label> <%= inspect @pid %></li>
+    <li><label>ID:</label> <%= link @issue.id, to: "/issues/#{@issue.id}" %></li>
     <%= if @issue.parent_id do %>
-      <b>Parent ID:</b> <%= link @issue.parent_id, to: "/issues/#{@issue.parent_id}" %>
+    <li><label>Parent:</label> <%= link @issue.parent_id, to: "/issues/#{@issue.parent_id}" %></li>
     <% end %>
+  </ul>
+  <div class="issue-description"><%= description(@issue, :markdown) %></div>
+
+
+  <div class="debug">
+    <p>Debug information:</p>
     <code>
       <%= inspect @issue.options %>
     </code>
-  </p>
+  </div>
   
-  <%= if( (ApmIssues.Issue.children(@pid) |> Enum.count()) > 0) do %>
-    <blockquote>
-      <%= ApmPx.IssuesView.render_children(@conn,@pid) %> 
-    </blockquote>
-  <% end %>
+  <div class="issue-children">
+    <%= if( (ApmIssues.Issue.children(@pid) |> Enum.count()) > 0) do %>
+      <div class="children">
+        <%= ApmPx.IssuesView.render_children(@conn,@pid) %> 
+      </div>
+    <% end %>
+  </div>
 
 </div>

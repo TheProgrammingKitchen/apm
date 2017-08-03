@@ -1,6 +1,16 @@
 /*               */
 /* General stuff */
 /*               */
+header {
+  background: lightgray;
+  height: 9em;
+}
+
+.main {
+  margin: 0;
+  padding: 1em;
+}
+
 button { 
   background: #3674D0; color: white;
   border: none;
@@ -37,14 +47,91 @@ button {
   margin-bottom: 0;
 }
 
-header {
-  background: lightgray;
-  height: 9em;
+#issues {
+  margin-left: 1em;
 }
 
-.main {
+#issues * img {
+  max-width: 100%;
+}
+
+#issues .issue-index {
+  padding-left: 1em;
+}
+
+.issue-index .children {
+  border-left: 1px solid darkgrey;
+  margin-left: 2em;
+  margin-bottom: 2em;
+  font-size: small;
+}
+.issue-index .children h2 {
+  font-size: small;
+}
+
+.issue-index ul.attribute {
+  list-style-type: none;
   margin: 0;
-  padding: 1em;
+  padding: 0;
+}
+.issue-index ul.attribute li {
+  margin-left: 0;
+  padding-left: 0;
+}
+.issue-index ul.attribute li label {
+  width: 4em;
+}
+.issue-description {
+  font-size: larger;
+}
+
+.issue-links {
+  float: right;
+  display: inline-block;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+ul.link-buttons {
+  width: 8em;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
+ul.link-buttons li {
+  float: left;
+  width: 8em;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid white;
+  background-color: #3674D0;
+  color: white;
+  font-size: smaller;
+}
+ul.link-buttons li a {
+  color: white;
+}
+
+ul.link-buttons li:hover {
+  background: darkred;
+  color: white;
+  text-shadow: 0px 0px #ddd;
+}
+ul.link-buttons li a:hover {
+  text-decoration: none;
+  color: white;
+}
+
+.debug {
+  font-size: x-small;
+  border: 1px solid lightgrey;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
 }
 
 /* Login component in header */
