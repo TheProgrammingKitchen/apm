@@ -41,7 +41,10 @@ Files for the [Github.io pages] of this project.
 
 ## Quick start developing 
 
+  * cd into `elixir/`
+  * run `mix deps.get`
   * cd into `elixir/apps/apm_px`
+    * perhaps you need to run `npm install`
   * start the server with `mix phoenix.server` (in an extra terminal window)
     - now you can open the frontend in your browser `http://localhost:4000`
   * start `phantomjs --wd` (in an extra terminal window)
