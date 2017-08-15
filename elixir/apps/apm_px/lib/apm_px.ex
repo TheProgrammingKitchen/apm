@@ -14,11 +14,15 @@ defmodule ApmPx do
     import Supervisor.Spec
 
     children = [
-      supervisor(ApmPx.Endpoint, []),
-      supervisor(ApmIssues.Repository, [])
+      #worker(ApmRepository.Dictionary, [:issues]),
+      worker(ApmIssues.Repo,[:issues]),
+      supervisor(ApmPx.Endpoint, [])
     ]
 
     opts = [strategy: :one_for_one, name: ApmPx.Supervisor]
+
+    #Application.ensure_all_started(:apm_repository,:permanent)
+    
     Supervisor.start_link(children, opts)
   end
 

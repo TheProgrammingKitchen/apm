@@ -27,8 +27,8 @@ defmodule ApmIssues.Adapter.File do
         true -> ""
         _ -> line
       end
-      end)
-      |> Enum.join("\n")
+    end)
+    |> Enum.join("\n")
   end
 
 end

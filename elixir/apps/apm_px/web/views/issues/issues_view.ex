@@ -2,18 +2,22 @@ defmodule ApmPx.IssuesView do
   use ApmPx.Web, :view
   require Logger
   
-  alias ApmIssues.{Repository}
+  alias ApmIssues.{Repo}
 
   @doc"""
   Render all root-issues recursively
   """
   def render_issues_index(conn) do
-    Repository.root_issues
-    |> Enum.map( fn(pid) -> render_issue(conn,pid) end)
+    Repo.root_issues
+    |> Enum.map( fn(issue) -> render_issue(conn,issue) end)
   end
-  defp render_issue(conn,{pid, id}) do
-    issue = ApmIssues.Issue.state({pid, id})
-    render("_issue_index.html", conn: conn, id: id, pid: pid, issue: issue)
+
+  defp render_issue(conn,issue) do
+    {uuid, {issue, parent, children}} = issue
+    render("_issue_index.html", 
+      conn: conn, id: uuid, parent_id: parent, 
+      issue: issue, children: children
+    )
   end
 
   @doc"""
@@ -22,10 +26,13 @@ defmodule ApmPx.IssuesView do
   def render_show_issue(conn) do
     params = conn.params
     item_id = params["id"]
-    pid = Repository.find_by_id(item_id)
-    issue = ApmIssues.Issue.state({pid, item_id})
-
-    render("_issue_index.html", conn: conn, id: item_id, pid: pid, issue: issue)
+    case Repo.get(item_id) do
+      :not_found -> "Issue #{item_id} not found"
+      {entity, parent, children} -> render(
+        "_issue_index.html", conn: conn, id: item_id, issue: entity,
+        parent_id: parent, children: children
+      )
+    end
   end
 
   @doc"""
@@ -43,9 +50,12 @@ defmodule ApmPx.IssuesView do
   @doc"""
   Render children of an issue recursively
   """
-  def render_children(conn,parent_pid) do
-    ApmIssues.Issue.children(parent_pid)
-    |> Enum.map( fn(pid) -> render_issue(conn,pid) end)
+  def render_children(conn,children) do
+    children
+    |> Enum.map( fn(child_id) -> 
+      child = ApmIssues.Repo.get(child_id)
+      render_issue(conn,{child_id, child}) 
+    end)
   end
 
   @doc"""
@@ -74,8 +84,9 @@ defmodule ApmPx.IssuesView do
 
   @doc "Format description"
   def description(issue) do
-    (issue.options["description"] || "")
+    Map.merge(issue, %{description: ""}).description
   end
+
   def description(issue, :markdown) do
     description(issue)
       |> Earmark.as_html!

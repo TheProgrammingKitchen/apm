@@ -1,5 +1,15 @@
 defmodule ApmIssues do
 
-  def insert(uuid, data, parent_id \\ nil, children \\ []) do
+  @doc"""
+  Seed from JSON-Fixtures.
+
+  This function may go away once we have a 'real' gateway
+  """
+  def seed do
+    filename = Path.expand("../../../data/fixtures/issues.json",__DIR__)
+    ApmIssues.Adapter.File.read!(filename)
   end
+
+
+
 end

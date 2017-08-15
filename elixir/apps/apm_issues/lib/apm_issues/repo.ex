@@ -17,20 +17,57 @@ defmodule ApmIssues.Repo do
   end
 
   def get(uuid) do
-    GenServer.call(__MODULE__,{:get, uuid})
+    case GenServer.call(__MODULE__,{:get, uuid}) do
+      nil -> :not_found
+      found -> found
+    end
   end
   
   def all() do
     GenServer.call(__MODULE__, :all )
   end
 
+  def count() do
+    GenServer.call(__MODULE__, :count )
+  end
+
   def root_issues() do
     GenServer.call(__MODULE__, :root_issues )
   end
 
+  def find_by_subject(subject) do
+    GenServer.call(__MODULE__, {:find_by_subject, subject})
+  end
+
+  def drop_with_children(uuid,children) do
+    Enum.each(children, fn(child_id) ->
+      {_entity, parent_id, sub_children} = get(child_id)
+      drop_with_children(child_id, sub_children)
+    end)
+    GenServer.cast(__MODULE__, {:remove, uuid})
+  end
+
+  def add_child(parent_uuid,child_uuid) do
+    GenServer.cast(__MODULE__,{:add_child, parent_uuid, child_uuid})
+  end
+
+  def remove_child(parent_id,child_id) do
+    {entity, parent_id, children} = ApmIssues.Repo.get(parent_id)
+    GenServer.cast(__MODULE__, {:remove_child, parent_id, child_id})
+  end
+
+  def update(uuid, subject, options) do
+    {entity, parent_id, children} = ApmIssues.Repo.get(uuid)
+    changeset = %{subject: subject} |> Map.merge(options)
+    GenServer.cast(__MODULE__, {:update, uuid, changeset})
+  end
+
   def handle_call(:all, _form, bucket) do
-    IO.inspect "HANDLE ALL ISSUES"
     {:reply, ApmRepository.Bucket.all(bucket), bucket}
+  end
+
+  def handle_call(:count, _form, bucket) do
+    {:reply, ApmRepository.Bucket.count(bucket), bucket}
   end
 
   def handle_call(:root_issues, _form, bucket) do
@@ -38,6 +75,13 @@ defmodule ApmIssues.Repo do
       parent == nil 
     end)
     {:reply, roots, bucket}
+  end
+
+  def handle_call({:find_by_subject, subject}, _form, bucket) do
+    found = ApmRepository.Bucket.select(bucket, fn({_uuid,{entity,_parent,_children}}) -> 
+      entity.subject == subject 
+    end)
+    {:reply, found, bucket}
   end
 
   def handle_call({:get, uuid}, _from, bucket) do
@@ -51,4 +95,23 @@ defmodule ApmIssues.Repo do
     {:noreply, bucket}
   end
 
+  def handle_cast({:remove, uuid}, bucket) do
+    ApmRepository.Bucket.drop( bucket, [uuid])
+    {:noreply, bucket}
+  end
+
+  def handle_cast({:remove_child, parent_id, child_id}, bucket) do
+    ApmRepository.Bucket.remove_child(bucket, parent_id, child_id)
+    {:noreply, bucket}
+  end
+
+  def handle_cast({:add_child, parent_uuid, child_uuid}, bucket) do
+    ApmRepository.Bucket.add_child(bucket, parent_uuid, child_uuid)
+    {:noreply, bucket}
+  end
+
+  def handle_cast({:update, uuid, changeset}, bucket) do
+    ApmRepository.Bucket.update(bucket, uuid, changeset)
+    {:noreply, bucket}
+  end
 end

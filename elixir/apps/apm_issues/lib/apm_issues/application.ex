@@ -5,8 +5,10 @@ defmodule ApmIssues.Application do
 
   def start(_type, _args) do
     children = [
-      {ApmIssues.Repo,:issues}
+      # Start from PX! {ApmIssues.Repo,:issues}
     ]
+
+    ApmIssues.seed()
 
     opts = [strategy: :one_for_one, name: ApmIssues.Supervisor]
     Supervisor.start_link(children, opts)

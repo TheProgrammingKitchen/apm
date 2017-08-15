@@ -5,6 +5,10 @@ defmodule ApmPx.Endpoint do
 
   socket "/socket", ApmPx.UserSocket
 
+  unless System.get_env("MIX_ENV") == :prod do
+    ApmIssues.seed # For development and testing only
+  end
+
   plug Plug.Static,
     at: "/", from: :apm_px, gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)

@@ -5,8 +5,8 @@ defmodule ApmPx.IssueControllerTest do
 
   setup do
     Application.ensure_all_started(:apm_repository)
-    ApmIssues.Repository.drop!()
-    ApmIssues.Repository.seed()
+    ApmRepository.Dictionary.drop!()
+    ApmIssues.seed()
     :ok
   end
 
@@ -50,7 +50,7 @@ defmodule ApmPx.IssueControllerTest do
              %{issue: %{ subject: "New Issue", description: "Some text"}} 
            )
 
-    issue = ApmIssues.Repository.find_by_subject("New Issue") |> hd
+    issue = ApmIssues.Repo.find_by_subject("New Issue") |> hd
     assert String.match?(ApmIssues.Issue.state(issue).id, ~r/^[0-9a-f]{8}-/)
     assert ApmIssues.Issue.state(issue).subject == "New Issue"
     assert ApmIssues.Issue.state(issue).options == %{"description" => "Some text"}
@@ -62,40 +62,40 @@ defmodule ApmPx.IssueControllerTest do
       |> post( "/issues", 
                %{issue: %{ subject: "Issue123", description: "Original text"}} 
              )
-    {_pid, id} = (ApmIssues.Repository.find_by_subject("Issue123")) |> hd
+      {uuid, {_data, _parent, _children}} = (ApmIssues.Repo.find_by_subject("Issue123")) |> hd
+ 
+      conn 
+        |> login_as("some user", "admin") 
+        |> post( "/issues/#{uuid}", 
+                 %{issue: %{ subject: "Issue123", description: "Modified text"}} 
+               )
 
-    conn 
-      |> login_as("some user", "admin") 
-      |> post( "/issues/#{id}", 
-               %{issue: %{ subject: "Issue123", description: "Modified text"}} 
-             )
-    issue = ApmIssues.Repository.find_by_subject("Issue123") |> hd
-
-    assert String.match?(ApmIssues.Issue.state(issue).id, ~r/^[0-9a-f]{8}-/)
-    assert ApmIssues.Issue.state(issue).subject == "Issue123"
-    assert ApmIssues.Issue.state(issue).options == %{"description" => "Modified text"}
+      {uuid, {entity,_parent,_children}} = ApmIssues.Repo.find_by_subject("Issue123") |> hd
+ 
+      assert String.match?(uuid, ~r/^[0-9a-f]{8}-/)
+      assert entity.subject == "Issue123"
+      assert entity.description == "Modified text"
   end
 
   test "DELETE /issues/:id deletes an issue and its children", %{conn: conn} do
-    ApmIssues.Repository.drop!()
-    ApmIssues.Repository.seed()
-    {pid, id} = (ApmIssues.Repository.find_by_subject("Item-2")) |> hd
-    assert id == "12345678-1234-1234-1234-123456789ab2"
-    children = ApmIssues.Issue.children(pid)
+    ApmRepository.Dictionary.drop!()
+    ApmIssues.seed()
+    {uuid, {_issue, _parent_id, children}} = (ApmIssues.Repo.find_by_subject("Item Number Two With Children")) |> hd
+    assert uuid == "12345678-1234-1234-1234-123456789abd"
     assert Enum.count(children) == 2
-    cnt = ApmIssues.Repository.count
+    cnt = ApmIssues.Repo.count 
 
     conn
-      |> delete( "/issues/#{id}" )
+      |> delete( "/issues/#{uuid}" )
 
-    assert ApmIssues.Repository.find_by_id(id) == :not_found
-    assert ApmIssues.Repository.count == cnt - 3
+    assert ApmIssues.Repo.get(uuid) == :not_found
+    assert ApmIssues.Repo.count == cnt - 3
   end
 
   test "GET /issues/:parent_id/new renders the form with parent field", %{conn: conn} do
-    ApmIssues.Repository.drop!()
-    ApmIssues.Repository.seed()
-    {_pid, parent_id} = (ApmIssues.Repository.find_by_subject("Item-2")) |> hd
+    ApmRepository.Dictionary.drop!()
+    ApmIssues.seed()
+    {_pid, parent_id} = (ApmIssues.Repo.find_by_subject("Item-2")) |> hd
     
     session = conn 
               |> login_as("some user", "admin") 
@@ -105,7 +105,7 @@ defmodule ApmPx.IssueControllerTest do
   end
 
   test "POST /issues/ with parent_id creates a new child", %{conn: conn} do
-    parent = ApmIssues.Repository.find_by_id("12345678-1234-1234-1234-123456789ab2")
+    parent = ApmIssues.Repo.find_by_id("12345678-1234-1234-1234-123456789ab2")
              |> ApmIssues.Issue.state
     before_count = Enum.count(parent.children)
 
@@ -115,7 +115,7 @@ defmodule ApmPx.IssueControllerTest do
              %{issue: %{parent_id: "12345678-1234-1234-1234-123456789ab2", subject: "Sub Issue", description: "New Child"}} 
            )
 
-    issue = ApmIssues.Repository.find_by_id("12345678-1234-1234-1234-123456789ab2") 
+    issue = ApmIssues.Repo.find_by_id("12345678-1234-1234-1234-123456789ab2") 
     assert ApmIssues.Issue.state(issue).children |> Enum.count  == before_count + 1
   end
 

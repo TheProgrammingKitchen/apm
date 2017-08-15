@@ -142,6 +142,13 @@ defmodule ApmRepository.Bucket do
     GenServer.cast(bucket,:clear)
   end
 
+  @doc"""
+  Drop entries from bucket
+  """
+  def drop(bucket, uuids) do
+    GenServer.cast(bucket, {:drop, uuids})
+  end
+
 
   @doc"""
   Add a child to an entry
@@ -167,6 +174,14 @@ defmodule ApmRepository.Bucket do
     bucket
   end
 
+  def add_child(bucket, parent_uuid, child_uuid) do
+    GenServer.cast(bucket, {:add_child, parent_uuid, child_uuid})
+    bucket
+  end
+
+  def remove_child(bucket, parent_id, child_id) do
+    GenServer.cast(bucket, {:remove_child, parent_id, child_id})
+  end
   #
   # Gen Server Callbacks
   #
@@ -215,5 +230,16 @@ defmodule ApmRepository.Bucket do
       {e, parent_id, [child_id|children]} 
     end)
     {:noreply, state}
+  end
+
+  def handle_cast({:remove_child, parent_id, child_id}, bucket) do
+    state =  Map.update!( bucket, parent_id, fn({e,parent_id,children}) -> 
+      {e, parent_id, Enum.drop(children, child_id)} 
+    end)
+    {:noreply, state}
+  end
+
+  def handle_cast({:drop, uuids}, bucket) do
+    {:noreply, Map.drop(bucket, uuids)}
   end
 end
