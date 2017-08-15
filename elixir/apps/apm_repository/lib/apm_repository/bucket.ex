@@ -212,8 +212,14 @@ defmodule ApmRepository.Bucket do
     {:noreply, Map.drop(bucket, [uuid])}
   end
 
+  def handle_cast({:drop, uuids}, bucket) do
+    {:noreply, Map.drop(bucket, uuids)}
+  end
+
   def handle_cast({:update, uuid, changeset}, bucket) do
-    state = Map.update!( bucket, uuid, fn({e,parent_id,children}) -> {Map.merge(e,changeset),parent_id, children} end)
+    state = Map.update!( bucket, uuid, fn({e,parent_id,children}) -> 
+      { Map.merge(e,changeset),parent_id, children } 
+    end)
     {:noreply, state}
   end
 
@@ -233,13 +239,14 @@ defmodule ApmRepository.Bucket do
   end
 
   def handle_cast({:remove_child, parent_id, child_id}, bucket) do
-    state =  Map.update!( bucket, parent_id, fn({e,parent_id,children}) -> 
-      {e, parent_id, Enum.drop(children, child_id)} 
-    end)
-    {:noreply, state}
+    if parent_id == nil do
+      {:noreply, bucket}
+    else
+      {:noreply, Map.update!( bucket, parent_id, fn({e,uuid,children}) -> 
+                   {e, uuid, Enum.reject(children, &(&1 == child_id))} 
+                 end)
+      }
+    end
   end
 
-  def handle_cast({:drop, uuids}, bucket) do
-    {:noreply, Map.drop(bucket, uuids)}
-  end
 end

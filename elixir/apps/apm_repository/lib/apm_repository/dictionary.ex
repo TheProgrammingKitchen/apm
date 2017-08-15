@@ -79,14 +79,16 @@ defmodule ApmRepository.Dictionary do
 
   # GenServer Callbacks
 
-  def init(dictionary) do
-    {:ok, Map.merge(%{}, dictionary)}
+  def init(_dictionary) do
+    {:ok, %{}}
   end
 
-  # FIXME: Empty dictionary before return new state.
-  # FIXME: Check if this is necessary or if erlang/elexir handles
-  # FIXME: this case without flaws.
-  def handle_cast(:drop, _dictionary) do
+  def handle_cast(:drop, dictionary) do
+    dictionary
+    |> Enum.each( fn({name,type,bucket}) ->
+      IO.inspect ["CLEAR DICTIONARY", name, type, bucket]
+      ApmRepository.Bucket.drop!(bucket)
+    end)
     {:noreply, [] }
   end
 

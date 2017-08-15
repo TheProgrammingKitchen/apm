@@ -76,11 +76,7 @@ defmodule ApmPx.IssuesController do
   """
   def delete(conn, params) do
     uuid = params["id"]
-    {_entity,parent_id,children} = ApmIssues.Repo.get(uuid)
-    ApmIssues.Issue.drop_with_children(uuid,children)
-    if parent_id do
-      ApmIssues.Issue.remove_child(parent_id,uuid)
-    end
+    ApmIssues.Repo.delete(params["id"])
     conn
       |> put_flash(:success, gettext("Issue deleted"))
       |> redirect(to: issues_path(conn, :index))

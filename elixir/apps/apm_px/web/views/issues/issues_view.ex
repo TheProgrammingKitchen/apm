@@ -13,11 +13,14 @@ defmodule ApmPx.IssuesView do
   end
 
   defp render_issue(conn,issue) do
-    {uuid, {issue, parent, children}} = issue
-    render("_issue_index.html", 
-      conn: conn, id: uuid, parent_id: parent, 
-      issue: issue, children: children
-    )
+    case issue do 
+      {uuid, {issue, parent, children}} ->
+          render("_issue_index.html", 
+            conn: conn, id: uuid, parent_id: parent, 
+            issue: issue, children: children
+          )
+      {uuid, :not_found} -> "Issue #{uuid} not found"
+    end
   end
 
   @doc"""
@@ -36,13 +39,12 @@ defmodule ApmPx.IssuesView do
   end
 
   @doc"""
-  Render one issue recursively
+  Render one issue for editing
   """
   def render_edit_issue(conn) do
     params = conn.params
     item_id = params["id"]
-    pid = Repository.find_by_id(item_id)
-    issue = ApmIssues.Issue.state({pid, item_id})
+    {issue, _parent_id, _children} = Repo.get(item_id)
     form(conn, {:update, issue })
   end
 
@@ -64,7 +66,7 @@ defmodule ApmPx.IssuesView do
   """
   def form(conn,{action, changeset} \\ {:create, %ApmIssues.Issue{}} ) do
     path = case action do
-      :update -> issues_path(conn, :update, changeset.id)
+      :update -> issues_path(conn, :update, changeset.uuid)
       :create -> issues_path(conn, :create)
       _ -> Logger.error "Action #{action} not supported"
     end
@@ -79,12 +81,12 @@ defmodule ApmPx.IssuesView do
 
   @doc "Format id"
   def id(issue) do
-    issue.id || ""
+    issue.uuid || ""
   end
 
   @doc "Format description"
   def description(issue) do
-    Map.merge(issue, %{description: ""}).description
+    Map.merge(%{description: ""},issue).description
   end
 
   def description(issue, :markdown) do
@@ -94,10 +96,9 @@ defmodule ApmPx.IssuesView do
   end
 
   @doc "Get title of a given id"
-  def subject_for_id(id) do
-    s = ApmIssues.Repository.find_by_id(id)
-        |> ApmIssues.Issue.state()
-    s.subject
+  def subject_for_id(uuid) do
+    {issue, parent_id, children} = ApmIssues.Repo.get(uuid)
+    issue.subject
   end
 
 end

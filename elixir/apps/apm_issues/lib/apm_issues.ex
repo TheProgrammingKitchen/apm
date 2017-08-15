@@ -10,6 +10,10 @@ defmodule ApmIssues do
     ApmIssues.Adapter.File.read!(filename)
   end
 
+  def drop! do
+    ApmIssues.Repo.drop!
+  end
+
 
 
 end

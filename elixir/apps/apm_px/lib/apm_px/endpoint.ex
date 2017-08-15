@@ -1,11 +1,13 @@
 defmodule ApmPx.Endpoint do
+  require Logger
   @moduledoc "Phoenix endpoint as created by phx.new"
 
   use Phoenix.Endpoint, otp_app: :apm_px
 
   socket "/socket", ApmPx.UserSocket
 
-  unless System.get_env("MIX_ENV") == :prod do
+  unless System.get_env("MIX_ENV") == "production" do
+    Logger.info "STARTING WITH SEEDS FROM FIXTURE FILES ./data/fixutures/issues.json"
     ApmIssues.seed # For development and testing only
   end
 

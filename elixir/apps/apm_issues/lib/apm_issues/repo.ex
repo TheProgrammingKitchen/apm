@@ -1,15 +1,25 @@
 defmodule ApmIssues.Repo do
-
+  require Logger
   use GenServer
 
   def start_link(name) do
-    GenServer.start_link(__MODULE__,{}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, name, name: __MODULE__)
   end
 
-
   def init(name) do
+    Logger.info "Start Repo #{inspect name}"
     {:ok, _t, bucket} = ApmRepository.new_bucket({name, ApmIssues.Issue})
+
+    unless System.get_env("MIX_ENV") == "production" do
+      Logger.info "Seed data in non-production environment #{inspect System.get_env("MIX_ENV")}"
+      ApmIssues.seed
+    end
+  
     {:ok, bucket}
+  end
+
+  def drop! do
+    GenServer.cast(__MODULE__, :drop) 
   end
 
   def insert(uuid,data,parent_id,children) do
@@ -39,12 +49,24 @@ defmodule ApmIssues.Repo do
     GenServer.call(__MODULE__, {:find_by_subject, subject})
   end
 
+  def delete(uuid) do
+    {_entity,parent_id,children} = ApmIssues.Repo.get(uuid)
+    if parent_id do
+      ApmIssues.Repo.remove_child(parent_id,uuid)
+    end
+    ApmIssues.Repo.drop_with_children(uuid,children)
+  end
+
+  def drop_with_children(uuid,[]) do
+    GenServer.cast(__MODULE__, {:remove, uuid})
+  end
+
   def drop_with_children(uuid,children) do
     Enum.each(children, fn(child_id) ->
       {_entity, parent_id, sub_children} = get(child_id)
       drop_with_children(child_id, sub_children)
     end)
-    GenServer.cast(__MODULE__, {:remove, uuid})
+    drop_with_children(uuid,[])
   end
 
   def add_child(parent_uuid,child_uuid) do
@@ -52,7 +74,6 @@ defmodule ApmIssues.Repo do
   end
 
   def remove_child(parent_id,child_id) do
-    {entity, parent_id, children} = ApmIssues.Repo.get(parent_id)
     GenServer.cast(__MODULE__, {:remove_child, parent_id, child_id})
   end
 
@@ -112,6 +133,11 @@ defmodule ApmIssues.Repo do
 
   def handle_cast({:update, uuid, changeset}, bucket) do
     ApmRepository.Bucket.update(bucket, uuid, changeset)
+    {:noreply, bucket}
+  end
+
+  def handle_cast(:drop, bucket) do
+    ApmRepository.Bucket.drop!(bucket)
     {:noreply, bucket}
   end
 end
