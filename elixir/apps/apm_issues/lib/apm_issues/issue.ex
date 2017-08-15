@@ -1,7 +1,7 @@
 defmodule ApmIssues.Issue do
   @moduledoc """
-  `ApmIssue` is a struct representing a (eg Jira)Issue.
-  A story, task, bug, ...
+    `ApmIssue` is a struct representing a (eg Jira)Issue.
+    A story, task, bug, ...
   """
 
   defstruct uuid: "", subject: "", description: ""
@@ -21,6 +21,11 @@ defmodule ApmIssues.Issue do
     %ApmIssues.Issue{uuid: gen_uuid()} |> Map.merge(attributes)
   end
 
+  @doc"""
+    FIXME: This is still the old structure. Update should work as
+
+        update( uuid, %Issue{}, parent \\ nil, children \\ [] )
+  """
   def update( uuid, subject, options ) do
     ApmIssues.Repo.update(uuid, subject, options)
   end

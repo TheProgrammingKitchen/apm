@@ -13,14 +13,13 @@ defmodule ApmIssues.Adapter do
 
   @doc"""
   Issues is a list of structures going to be pushed to the
-  repository. The function returns a list of PIDs.
+  repository. 
   """
   def push issues do
     push_with_children(issues)
   end
 
   defp push_with_children([]), do: nil
-
   defp push_with_children([issue|rest]) do
     %{ parent_id: nil, children: [] }
     |> Map.merge(issue)
