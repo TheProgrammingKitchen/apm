@@ -51,6 +51,7 @@ defmodule ApmPx.E2EIssuesTest do
     test "Edit an issue" do
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues/new")
+
       ApmIssues.drop!
 
       fill_field({:name, "issue[subject]"}, "New Subject")

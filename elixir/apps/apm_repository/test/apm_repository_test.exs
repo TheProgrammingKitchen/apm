@@ -21,7 +21,7 @@ defmodule ApmRepositoryTest do
 
     # Start a Bucket
     {:ok, ApmRepositoryTest.ExampleStruct, bucket} =
-      ApmRepository.new_bucket({"issues", ExampleStruct})
+      ApmRepository.new_bucket({"test-bucket", ExampleStruct})
 
     assert is_pid(bucket)
 
@@ -49,7 +49,7 @@ defmodule ApmRepositoryTest do
   test "Shutdown an Entry removes it from the dictionary" do
     # Start a Bucket
     {:ok, ApmRepositoryTest.ExampleStruct, bucket1} =
-      ApmRepository.new_bucket({"issues", ExampleStruct})
+      ApmRepository.new_bucket({"example", ExampleStruct})
     # Start another Bucket
     {:ok, ApmRepositoryTest.ExampleStruct, bucket2} =
       ApmRepository.new_bucket({"people", ExampleStruct})

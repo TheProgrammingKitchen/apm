@@ -1,4 +1,5 @@
 defmodule ApmRepository.Dictionary do
+  require Logger
  
   @moduledoc"""
     The `ApmRepository.Dictionary` is a `GenServer` and 
@@ -69,27 +70,11 @@ defmodule ApmRepository.Dictionary do
     GenServer.cast(__MODULE__, {:push, item, bucket_name})
   end
 
-  def handle_cast({:push, item, bucket_name}, dictionary) do
-    {_name,_type,bucket} = Enum.find(dictionary, fn({name,_type,_pid})->
-      name == bucket_name
-    end)
-    ApmRepository.Bucket.add(bucket, item.uuid, item)
-    {:noreply, dictionary}
-  end
 
   # GenServer Callbacks
 
   def init(_dictionary) do
     {:ok, %{}}
-  end
-
-  def handle_cast(:drop, dictionary) do
-    dictionary
-    |> Enum.each( fn({name,type,bucket}) ->
-      IO.inspect ["CLEAR DICTIONARY", name, type, bucket]
-      ApmRepository.Bucket.drop!(bucket)
-    end)
-    {:noreply, [] }
   end
 
   def handle_call(:count, _from, dictionary) do
@@ -100,6 +85,26 @@ defmodule ApmRepository.Dictionary do
     {:ok, bucket} = ApmRepository.Bucket.start_link({name, type})
     Process.monitor(bucket)
     {:reply, {:ok, type, bucket}, [ {name, type, bucket} | dictionary ]  }
+  end
+
+  def handle_cast({:push, item, bucket_name}, dictionary) do
+    {_name,_type,bucket} = Enum.find(dictionary, fn({name,_type,_pid})->
+      name == bucket_name
+    end)
+    ApmRepository.Bucket.add(bucket, item.uuid, item)
+    {:noreply, dictionary}
+  end
+
+  def handle_cast(:drop, dictionary) do
+    try do
+      dictionary
+      |> Enum.each( fn({_name,_type,bucket}) ->
+        ApmRepository.Bucket.drop!(bucket)
+      end)
+    catch
+      e,m -> Logger.warn("Ignoring dictionary drop for #{inspect(dictionary)} - #{e} - #{m}")
+    end
+    {:noreply, [] }
   end
 
   def handle_info( {:DOWN, _ref, :process, pid, _reason}, dictionary ) do

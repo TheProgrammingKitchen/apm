@@ -55,6 +55,8 @@ defmodule ApmPx.IssueControllerTest do
     assert String.match?(uuid, ~r/^[0-9a-f]{8}-/)
     assert issue.subject == "New Issue"
     assert issue.description == "Some text"
+    assert children == []
+    assert parent == nil
   end
 
   test "POST /issues/:id updates an existing issue", %{conn: conn} do

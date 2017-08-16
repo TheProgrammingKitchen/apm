@@ -98,10 +98,8 @@ defmodule ApmIssues.Repo do
   """
   def delete(uuid) do
     {_entity,parent_id,children} = ApmIssues.Repo.get(uuid)
-    if parent_id do
-      ApmIssues.Repo.remove_child(parent_id,uuid)
-    end
-    ApmIssues.Repo.drop_with_children(uuid,children)
+    if parent_id, do: ApmIssues.Repo.remove_child(parent_id,uuid)
+    drop_with_children(uuid,children)
   end
 
   defp drop_with_children(uuid,[]) do
@@ -110,7 +108,7 @@ defmodule ApmIssues.Repo do
 
   defp drop_with_children(uuid,children) do
     Enum.each(children, fn(child_id) ->
-      {_entity, parent_id, sub_children} = get(child_id)
+      {_entity, _parent_id, sub_children} = get(child_id)
       drop_with_children(child_id, sub_children)
     end)
     drop_with_children(uuid,[])
@@ -138,7 +136,6 @@ defmodule ApmIssues.Repo do
     FIXME: It should be `update(uuid, changeset)`
   """
   def update(uuid, subject, options) do
-    {entity, parent_id, children} = ApmIssues.Repo.get(uuid)
     changeset = %{subject: subject} |> Map.merge(options)
     GenServer.cast(__MODULE__, {:update, uuid, changeset})
   end
