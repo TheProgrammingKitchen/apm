@@ -35,3 +35,4 @@ ISSUE
 <pre>
   <%= inspect(@issue) %>
 </pre>
+

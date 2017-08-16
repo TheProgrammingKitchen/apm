@@ -1,6 +1,5 @@
 defmodule ApmPx.E2EIssuesTest do
   use ApmPx.SessionHelper
-  use ApmPx.ConnCase, async: false
 
   describe "E2E Issues" do
 
@@ -9,17 +8,17 @@ defmodule ApmPx.E2EIssuesTest do
       login_as("user", "developer")
 
       navigate_to("http://localhost:4000/issues")
-      assert visible_text({:id, "issues"}) =~ "Item-1"
-      assert visible_text({:id, "issues"}) =~ "Item-2"
-      assert visible_text({:id, "issues"}) =~ "Item-2.2"
-      assert visible_text({:id, "issues"}) =~ "Item-2.1"
+      assert visible_text({:id, "issues"}) =~ "Item Number One"
+      assert visible_text({:id, "issues"}) =~ "Item Number Two With Children"
+      assert visible_text({:id, "issues"}) =~ "The Son Of #2"
+      assert visible_text({:id, "issues"}) =~ "The Daughter Of #2"
     end
 
     @tag :hound
     test "GET /issues when not logged in shows error" do
       navigate_to("http://localhost:4000/issues")
       assert visible_text({:class, "error"}) =~ "Please login first"
-      refute visible_page_text() =~ "Item-1"
+      refute visible_page_text() =~ "Item Number One"
     end
 
     @tag :hound
@@ -35,12 +34,12 @@ defmodule ApmPx.E2EIssuesTest do
 
     @tag :hound
     test "Add sub item" do
-      ApmIssues.Repository.seed
-
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues")
 
-      element_id = find_element(:id, "new-12345678-1234-1234-1234-123456789ab2")
+      take_screenshot()
+
+      element_id = find_element(:id, "new-12345678-1234-1234-1234-123456789abc")
       click(element_id)
       fill_field({:name, "issue[subject]"}, "A New SubTask")
       submit_element({:name, "issue[subject]"})
@@ -50,12 +49,15 @@ defmodule ApmPx.E2EIssuesTest do
 
     @tag :hound
     test "Edit an issue" do
-      ApmIssues.Repository.drop!()
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues/new")
+
+      ApmIssues.drop!
+
       fill_field({:name, "issue[subject]"}, "New Subject")
       fill_field({:name, "issue[description]"}, "Original Description")
       submit_element({:name, "issue[subject]"})
+
       element_id = find_element(:link_text, "edit")
       click(element_id)
       fill_field({:name, "issue[subject]"}, "Modified Subject")

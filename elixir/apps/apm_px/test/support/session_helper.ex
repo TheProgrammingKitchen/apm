@@ -1,17 +1,17 @@
 defmodule ApmPx.SessionHelper do
   defmacro __using__(_opts) do
     quote do
+      use ApmPx.ConnCase, async: false
       use ExUnit.Case
       use Hound.Helpers
 
       hound_session()
 
       setup do
-        Application.ensure_all_started(:apm_repository)
-        ApmIssues.Repository.drop!()
+        ApmIssues.drop!
+        ApmIssues.seed
         :ok
       end
-
 
       defp select_role(role) do
         find_element(:css, "#role-selector option[value='#{role}']") |> click()

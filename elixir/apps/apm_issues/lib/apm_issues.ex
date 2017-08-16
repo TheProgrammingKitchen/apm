@@ -1,18 +1,19 @@
 defmodule ApmIssues do
-  @moduledoc"""
-  The Application starts the `ApmIssues.Repository` as a worker.
+
+  @doc"""
+  Seed from JSON-Fixtures.
+
+  This function may go away once we have a 'real' gateway
   """
-
-  use Application
-
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      worker(ApmIssues.Repository, []),
-    ]
-
-    opts = [strategy: :one_for_one, name: ApmIssues.Supervisor]
-    Supervisor.start_link(children, opts)
+  def seed do
+    filename = Path.expand("../../../data/fixtures/issues.json",__DIR__)
+    ApmIssues.Adapter.File.read!(filename)
   end
+
+  def drop! do
+    ApmIssues.Repo.drop!
+  end
+
+
+
 end

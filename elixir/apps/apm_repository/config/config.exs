@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :apm_issues, key: :value
+#     config :apm_repository, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:apm_issues, :key)
+#     Application.get_env(:apm_repository, :key)
 #
 # You can also configure a 3rd-party app:
 #

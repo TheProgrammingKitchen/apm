@@ -14,11 +14,13 @@ defmodule ApmPx do
     import Supervisor.Spec
 
     children = [
-      supervisor(ApmPx.Endpoint, []),
-      supervisor(ApmIssues.Repository, [])
+      supervisor(ApmRepository.Dictionary,[]),
+      supervisor(ApmIssues.Repo,[:issues]),
+      supervisor(ApmPx.Endpoint, [])
     ]
 
     opts = [strategy: :one_for_one, name: ApmPx.Supervisor]
+    
     Supervisor.start_link(children, opts)
   end
 

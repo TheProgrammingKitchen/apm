@@ -1,9 +1,9 @@
-defmodule ApmIssues.Mixfile do
+defmodule ApmRepository.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :apm_issues,
+      app: :apm_repository,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -19,17 +19,18 @@ defmodule ApmIssues.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ApmIssues.Application, []}
+      mod: {ApmRepository.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:uuid, "~> 1.1" },
-      {:poison, "~> 2.0"},
-
-      {:apm_repository, in_umbrella: true}
+      { 
+        :ex_doc, "~> 0.14", 
+        only: :dev, 
+        runtime: false
+      }
     ]
   end
 end

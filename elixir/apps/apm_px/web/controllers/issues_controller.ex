@@ -40,17 +40,17 @@ defmodule ApmPx.IssuesController do
   """
   def create(conn, params) do
     {subject,options,parent} = cast(params["issue"])
-    pid = ApmIssues.Issue.create( subject, Map.drop(options,["parent_id"]) )
-    id  = pid |> ApmIssues.Issue.id()
-
+    entity = ApmIssues.Issue.new( Map.merge(options,%{subject: subject}))
+  
+    ApmIssues.Repo.insert(entity.uuid,entity,parent,[]) 
+   
     if parent do
-      {parent_pid,_parent_id} = ApmIssues.Repository.find_by_id(parent)
-      ApmIssues.Issue.add_child(parent_pid,pid)
+      ApmIssues.Repo.add_child(parent,entity.uuid)
     end
-
+    
     conn 
       |> put_flash(:success, gettext("Issue successfully created"))
-      |> redirect(to: "/issues/#{id}")
+      |> redirect(to: "/issues/#{entity.uuid}")
   end
 
   @doc """
@@ -75,8 +75,8 @@ defmodule ApmPx.IssuesController do
   Deleat an issue and its children
   """
   def delete(conn, params) do
-    {pid, _id} = ApmIssues.Repository.find_by_id(params["id"])
-    ApmIssues.Issue.drop_with_children(pid)
+    uuid = params["id"]
+    ApmIssues.Repo.delete(params["id"])
     conn
       |> put_flash(:success, gettext("Issue deleted"))
       |> redirect(to: issues_path(conn, :index))
@@ -90,7 +90,8 @@ defmodule ApmPx.IssuesController do
   defp cast(params) do
     subject = params["subject"]
     options =  Map.drop(params, ["subject"])
-    {subject, options, params["parent_id"]}
+    entity = for {key, val} <- options, into: %{}, do: {String.to_atom(key), val}
+    {subject, entity, params["parent_id"]}
   end
 
 end
