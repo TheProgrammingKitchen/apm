@@ -37,8 +37,6 @@ defmodule ApmPx.E2EIssuesTest do
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues")
 
-      take_screenshot()
-
       element_id = find_element(:id, "new-12345678-1234-1234-1234-123456789abc")
       click(element_id)
       fill_field({:name, "issue[subject]"}, "A New SubTask")
