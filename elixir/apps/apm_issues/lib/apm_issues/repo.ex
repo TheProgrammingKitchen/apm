@@ -3,13 +3,13 @@ defmodule ApmIssues.Repo do
   use GenServer
 
   @moduledoc"""
-  The _Repository_ for _Issues_ is a simple GenServer to store, update, and
-  delete Issues in the `ApmRepository.Bucket`("issues"). This `GenServer` 
-  itself holds just the PID of the named `Bucket`.
+  The _Repository_ for _Issues_ is a simple `GenServer` to store, update, and
+  delete `ApmIssues.Issue` in the `ApmRepository.Bucket`("issues"). 
+  This `GenServer` itself holds just the PID of the named `Bucket`.
   """
 
   @doc"""
-    Start the Repo with the given name ('issues')
+    Start the Repo with the given name ('issues' by default)
   """
   def start_link(name) do
     GenServer.start_link(__MODULE__, name, name: __MODULE__)
@@ -25,12 +25,7 @@ defmodule ApmIssues.Repo do
   def init(name) do
     Logger.info "Start Repo #{inspect name}"
     {:ok, _t, bucket} = ApmRepository.new_bucket({name, ApmIssues.Issue})
-
-    unless System.get_env("MIX_ENV") == "production" do
-      Logger.info "Seed data in non-production environment #{inspect System.get_env("MIX_ENV")}"
-      ApmIssues.seed
-    end
-  
+    unless Mix.env() == :test, do: ApmIssues.seed
     {:ok, bucket}
   end
 
@@ -42,19 +37,19 @@ defmodule ApmIssues.Repo do
   end
 
   @doc"""
-    insert a new Issue as `uuid, data, parent_id, children`
+    insert a new `ApmIssues.Issue` as `uuid, data, parent_id, children`
   """
   def insert(uuid,data,parent_id,children) do
     GenServer.cast(__MODULE__,{:insert, uuid, data, parent_id, children})
   end
 
   @doc"""
-    Get an Issue by UUID.
+    Get Issue by UUID.
 
     If the given UUID doesn't exist, the function returns `:not_found`.
     Otherwise it returns a tuple of
 
-    `{ %Issue{}, parent_id, children[] }`
+    `{ %ApmIssues.Issue{}, parent_id, children[] }`
 
   """
   def get(uuid) do
@@ -102,18 +97,6 @@ defmodule ApmIssues.Repo do
     drop_with_children(uuid,children)
   end
 
-  defp drop_with_children(uuid,[]) do
-    GenServer.cast(__MODULE__, {:remove, uuid})
-  end
-
-  defp drop_with_children(uuid,children) do
-    Enum.each(children, fn(child_id) ->
-      {_entity, _parent_id, sub_children} = get(child_id)
-      drop_with_children(child_id, sub_children)
-    end)
-    drop_with_children(uuid,[])
-  end
-
   @doc"""
     Add a `child_uuid` to the list of children of `parent_uuid`
   """
@@ -128,7 +111,6 @@ defmodule ApmIssues.Repo do
     GenServer.cast(__MODULE__, {:remove_child, parent_id, child_id})
   end
 
-
   @doc"""
     Update the issue with the given _uuid_
 
@@ -138,6 +120,19 @@ defmodule ApmIssues.Repo do
   def update(uuid, subject, options) do
     changeset = %{subject: subject} |> Map.merge(options)
     GenServer.cast(__MODULE__, {:update, uuid, changeset})
+  end
+
+
+  defp drop_with_children(uuid,[]) do
+    GenServer.cast(__MODULE__, {:remove, uuid})
+  end
+
+  defp drop_with_children(uuid,children) do
+    Enum.each(children, fn(child_id) ->
+      {_entity, _parent_id, sub_children} = get(child_id)
+      drop_with_children(child_id, sub_children)
+    end)
+    drop_with_children(uuid,[])
   end
 
   #
@@ -172,8 +167,7 @@ defmodule ApmIssues.Repo do
   end
 
   def handle_cast({:insert, uuid, data, parent_id, children}, bucket) do
-    ApmRepository.Bucket.add( bucket,
-      uuid, data, parent_id, children)
+    ApmRepository.Bucket.add( bucket, uuid, data, parent_id, children)
     {:noreply, bucket}
   end
 

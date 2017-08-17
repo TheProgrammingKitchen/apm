@@ -18,7 +18,7 @@ defmodule ApmIssues.AdapterTest do
         subject: "Item Number Two With Children", 
         uuid: "12345678-1234-1234-1234-123456789abd"
       }, 
-      nil, 
+      nil,  # no parent
       ["12345678-1234-1234-1234-123456789abe", "12345678-1234-1234-1234-123456789abf"]
     }
   end

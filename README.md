@@ -69,7 +69,7 @@ a single command `apm.tmux`
 [Phoenix]: http://www.phoenixframework.org
 [Umbrella]: https://elixir-lang.org/getting-started/mix-otp/dependencies-and-umbrella-apps.html#umbrella-projects
 
-[Github]: https://github.com/iboard/apm
+[Github]: https://github.com/TheProgrammingKitchen/apm
 [Pivotal Tracker]: https://www.pivotaltracker.com/n/projects/2079917
 
 [ZenHub Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128

@@ -76,7 +76,7 @@ defmodule ApmPx.IssuesController do
   """
   def delete(conn, params) do
     uuid = params["id"]
-    ApmIssues.Repo.delete(params["id"])
+    ApmIssues.Repo.delete(uuid)
     conn
       |> put_flash(:success, gettext("Issue deleted"))
       |> redirect(to: issues_path(conn, :index))

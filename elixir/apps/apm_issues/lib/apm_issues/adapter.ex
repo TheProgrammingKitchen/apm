@@ -1,6 +1,6 @@
 defmodule ApmIssues.Adapter do
   @moduledoc"""
-    The adapter reads ApmIssues.Issue entries from
+    The adapter reads `ApmIssues.Issue` entries from
     a JSON-fixture file into the repository
 
     For now it's sufficient to define a File-adpter.
@@ -14,6 +14,19 @@ defmodule ApmIssues.Adapter do
   @doc"""
   Issues is a list of structures going to be pushed to the
   repository. 
+
+  ## Structure
+
+     [
+       { "uuid" : "....",
+         "subject" : "....",
+         "children" : [ "123", "456", ... ],
+         "parent_id": "0000"
+       },
+       ....
+     ]
+
+  _children_ and _parent_id_ are optional.
   """
   def push issues do
     push_with_children(issues)
@@ -28,6 +41,9 @@ defmodule ApmIssues.Adapter do
     push_with_children(rest)
   end
 
+  # Parent and children are not part of the issue itself
+  # but being handled by the repository.
+  # `data` is the entity itself.
   defp extract_tree_structure( issue ) do
     %{ parent_id: parent_id, children: children } = issue
     data = Map.drop(issue, [:parent_id, :children])

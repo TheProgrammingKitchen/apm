@@ -14,17 +14,19 @@ reads and writes from/to the repository only.
 
 ## The nature of _Issues_
 
-    +---- Issue1                   1
-    +--\- Issue2                   2
-    |   -+-- Issue2.1              3
-    |    +-- Issue2.2              4
-    |    |  \-- Issue2.2.1         5
-    |    |    \-- Issue2.2.1.1     6
-    |    |     :
-    |    +-- Issue2.3           1000
-    +---- Issue3                1001
-    :
-    .                              n
+    Item                      | ID
+    --------------------------+-----
+    +---- Issue1              |    1
+    +--\- Issue2              |    2
+    |   -+-- Issue2.1         |    3
+    |    +-- Issue2.2         |    4
+    |    |  \-- Issue2.2.1    |    5
+    |    |    \-- Issue2.2.1.1|    6
+    |    |     :              |
+    |    +-- Issue2.3         | 1000
+    +---- Issue3              | 1001
+    :                         |
+    .                         |    n
 
 
 ## The internal representation
@@ -49,7 +51,7 @@ have at the first glance.
 ## Installation/Usage
 
 The repository application and it's modules can be used by
-including the following lines to the `mix.exs` file of the "user".
+including the following lines to the `mix.exs` file.
 
 
 ```elixir
@@ -68,7 +70,7 @@ Or, (once this project is on hex-pagages)
 ```elixir
 def deps do
   [
-    {:apm_issues, "~> 0.1.0"}
+    {:apm_issues, "~> 0.0.1"}
   ]
 end
 ```

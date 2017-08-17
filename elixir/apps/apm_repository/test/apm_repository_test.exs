@@ -15,6 +15,7 @@ defmodule ApmRepositoryTest do
     on_exit fn ->
       ApmRepository.drop!
     end
+    :ok
   end
 
   test "Simple usage of `ApmRepository`" do

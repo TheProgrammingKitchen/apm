@@ -4,6 +4,7 @@ defmodule ApmIssues.Adapter.File do
     and use `ApmIssues.Adapter` to push them to the repository.
 
     ## Dependency:
+
     `devinius/poison` to parse the json-string, loaded from the file.
   """
 
@@ -21,6 +22,7 @@ defmodule ApmIssues.Adapter.File do
     |> ApmIssues.Adapter.push
   end
 
+  # Ignore lines starting with \s*#
   defp filter_remarks lines do
     Stream.map(lines, fn(line) ->
       case Regex.match?(~r/\A\s*#.*\Z/, line) do

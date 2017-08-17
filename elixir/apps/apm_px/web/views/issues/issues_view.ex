@@ -89,6 +89,7 @@ defmodule ApmPx.IssuesView do
     Map.merge(%{description: ""},issue).description
   end
 
+  @doc "Render description as markdown `description(issue, :markdown)`"
   def description(issue, :markdown) do
     description(issue)
       |> Earmark.as_html!
@@ -97,7 +98,7 @@ defmodule ApmPx.IssuesView do
 
   @doc "Get title of a given id"
   def subject_for_id(uuid) do
-    {issue, parent_id, children} = ApmIssues.Repo.get(uuid)
+    {issue, _parent_id, _children} = ApmIssues.Repo.get(uuid)
     issue.subject
   end
 

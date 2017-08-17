@@ -2,9 +2,9 @@ defmodule ApmRepository.Dictionary do
   require Logger
  
   @moduledoc"""
-    The `ApmRepository.Dictionary` is a `GenServer` and 
-    manages the state of registered `ApmRepository.Bucket` processes
-    in the form
+    The `ApmRepository.Dictionary` is a `GenServer` managing
+    the state of registered `ApmRepository.Bucket` processes
+    of the form
 
         [{name, type, bucket},...]
 
@@ -24,7 +24,7 @@ defmodule ApmRepository.Dictionary do
   @doc"""
     Dictionary is started as a supervisor in application. 
     No need to call this function manually. Because `Dictionary`'s
-    `GenServer` is named by `__MODULE__` it is not possible to
+    `GenServer` is named as `__MODULE__` it is not possible to
     start more than one `Dictionary` (with current architecture)
   """
   def start_link(init_state \\ []) do
@@ -71,7 +71,9 @@ defmodule ApmRepository.Dictionary do
   end
 
 
+  #
   # GenServer Callbacks
+  #
 
   def init(_dictionary) do
     {:ok, %{}}
@@ -95,6 +97,8 @@ defmodule ApmRepository.Dictionary do
     {:noreply, dictionary}
   end
 
+  # FIXME: Swallowing the exception is necessary for test-mode.
+  # Figure out why and clean it up.
   def handle_cast(:drop, dictionary) do
     try do
       dictionary

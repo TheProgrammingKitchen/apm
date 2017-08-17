@@ -17,7 +17,7 @@ defmodule ApmRepository.Bucket do
            "uuid-3" => { %{ some: "thing", is: 99 }, "uuid-1", [] }
          }
 
-    **do not use 'Atoms' as keys!**
+    **do not use 'Atoms' as IDs here!**
   """
 
   use GenServer
@@ -43,18 +43,18 @@ defmodule ApmRepository.Bucket do
   end
 
   @doc"""
-  Remove an `entry` to the `bucket` using `uuid` as a key.
+    Remove an `entry` from `bucket`.
 
-  ### Example
+    ### Example
 
-        iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
-        iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
-        iex> ApmRepository.Bucket.get(pid, "ID1")
-        {%{name: "Frank"}, nil, []}
-        iex> ApmRepository.Bucket.remove(pid, "ID1")
-        iex> ApmRepository.Bucket.get(pid, "ID1")
-        nil
-        
+          iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
+          iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
+          iex> ApmRepository.Bucket.get(pid, "ID1")
+          {%{name: "Frank"}, nil, []}
+          iex> ApmRepository.Bucket.remove(pid, "ID1")
+          iex> ApmRepository.Bucket.get(pid, "ID1")
+          nil
+          
   """
   def remove bucket, uuid do
     GenServer.cast(bucket, {:remove, uuid})
@@ -66,17 +66,17 @@ defmodule ApmRepository.Bucket do
   end
 
   @doc"""
-  Get an `entry` out of the `bucket` using `uuid` as a key.
+    Get an `entry` out of the `bucket` using `uuid` as a key.
 
-  ### Example
+    ### Example
 
-        iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
-        iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
-        iex> ApmRepository.Bucket.get(pid, "ID1")
-        {%{name: "Frank"},nil,[]}
-        iex> ApmRepository.Bucket.get(pid, "UNKNOWN ID")
-        nil
-        
+          iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
+          iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
+          iex> ApmRepository.Bucket.get(pid, "ID1")
+          {%{name: "Frank"},nil,[]}
+          iex> ApmRepository.Bucket.get(pid, "UNKNOWN ID")
+          nil
+          
   """
   def get bucket, uuid do
     GenServer.call(bucket, {:get, uuid})
@@ -107,20 +107,21 @@ defmodule ApmRepository.Bucket do
 
 
   @doc"""
-  Update an `entry` in the `bucket` using `uuid` as a key and 
-  `changeset`.
+    Update an `entry` in the `bucket` using `uuid` as a key and 
+    a `changeset` which is being merged into the current struct.
 
-  ### Example
+    ### Example
 
-        iex> # Add entry
-        iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
-        iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
-        iex> #
-        iex> # Modify entry
-        iex> :ok = ApmRepository.Bucket.update(pid, "ID1", %{prof: "Music"})
-        iex> ApmRepository.Bucket.get(pid, "ID1")
-        {%{name: "Frank", prof: "Music"}, nil, []}
-        
+          iex> # Add entry
+          iex> {:ok,_type,pid} = ApmRepository.new_bucket({"people", %{}})
+          iex> ApmRepository.Bucket.add(pid, "ID1", %{name: "Frank"})
+          iex> #
+          iex> # Modify entry
+          iex> changeset = %{prof: "Music"}
+          iex> :ok = ApmRepository.Bucket.update(pid, "ID1", changeset)
+          iex> ApmRepository.Bucket.get(pid, "ID1")
+          {%{name: "Frank", prof: "Music"}, nil, []}
+          
   """
   def update bucket, uuid, changeset do
     GenServer.cast(bucket, {:update, uuid, changeset})
@@ -128,7 +129,7 @@ defmodule ApmRepository.Bucket do
 
 
   @doc"""
-  Count the number of entries in bucket
+    Count the number of entries in bucket
   """
   def count bucket do
     GenServer.call(bucket, :count)
@@ -136,14 +137,14 @@ defmodule ApmRepository.Bucket do
 
 
   @doc"""
-  Empty the bucket.
+    Empty the bucket.
   """
   def drop! bucket do
     GenServer.cast(bucket,:clear)
   end
 
   @doc"""
-  Drop entries from bucket
+    Drop entries from bucket
   """
   def drop(bucket, uuids) do
     GenServer.cast(bucket, {:drop, uuids})
@@ -151,21 +152,21 @@ defmodule ApmRepository.Bucket do
 
 
   @doc"""
-  Add a child to an entry
+    Add a new child to an entry
 
-  ### Example
+    ### Example
 
-      iex> {:ok,_type,bucket} = ApmRepository.new_bucket({"people", %{}})
-      iex> ApmRepository.Bucket.add(bucket, "ID1", %{name: "Frank Zappa"})
-      iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.1", %{name: "Moon Unit Zappa"})
-      iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.2", %{name: "Dweezil Zappa"})
-      iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.3", %{name: "Ahmet Zappa"})
-      iex> {_frank, _parent_id, _children} = ApmRepository.Bucket.get(bucket, "ID1")
-      {
-        %{name: "Frank Zappa"},
-        nil,
-        ["ID1.3", "ID1.2", "ID1.1"]
-      }
+        iex> {:ok,_type,bucket} = ApmRepository.new_bucket({"people", %{}})
+        iex> ApmRepository.Bucket.add(bucket, "ID1", %{name: "Frank Zappa"})
+        iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.1", %{name: "Moon Unit Zappa"})
+        iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.2", %{name: "Dweezil Zappa"})
+        iex> ApmRepository.Bucket.add_child(bucket,"ID1", "ID1.3", %{name: "Ahmet Zappa"})
+        iex> {_frank, _parent_id, _children} = ApmRepository.Bucket.get(bucket, "ID1")
+        {
+          %{name: "Frank Zappa"},
+          nil,
+          ["ID1.3", "ID1.2", "ID1.1"]
+        }
 
   """
   def add_child(bucket, parent_id, child_id, entity) do
@@ -174,17 +175,28 @@ defmodule ApmRepository.Bucket do
     bucket
   end
 
+
+  @doc"""
+    Link the child to the parent by inserting it's uuid to the
+    list of children of the parent.
+  """
   def add_child(bucket, parent_uuid, child_uuid) do
     GenServer.cast(bucket, {:add_child, parent_uuid, child_uuid})
     bucket
   end
 
+  @doc"""
+    Remove / unlink the child from it's parent.
+  """
   def remove_child(bucket, parent_id, child_id) do
     GenServer.cast(bucket, {:remove_child, parent_id, child_id})
   end
+
+
   #
   # Gen Server Callbacks
   #
+
   def handle_call({:get, uuid}, _from, bucket) do
     {:reply, Map.get(bucket, uuid), bucket}
   end
@@ -242,8 +254,8 @@ defmodule ApmRepository.Bucket do
     if parent_id == nil do
       {:noreply, bucket}
     else
-      {:noreply, Map.update!( bucket, parent_id, fn({e,uuid,children}) -> 
-                   {e, uuid, Enum.reject(children, &(&1 == child_id))} 
+      {:noreply, Map.update!( bucket, parent_id, fn({e,parent_uuid,children}) -> 
+                   {e, parent_uuid, Enum.reject(children, &(&1 == child_id))} 
                  end)
       }
     end
