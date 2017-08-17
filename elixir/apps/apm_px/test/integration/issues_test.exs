@@ -65,8 +65,8 @@ defmodule ApmPx.E2EIssuesTest do
       submit_element({:name, "issue[subject]"})
 
       assert visible_text({:class, "alert-success"}) =~ "Issue successfully updated"
-      assert visible_text({:class, "issue-index"}) =~ "Modified Subject"
-      assert visible_text({:class, "issue-index"}) =~ "A Modified Issue"
+      assert visible_text({:id, "issues"}) =~ "Modified Subject"
+      assert visible_text({:id, "issues"}) =~ "A Modified Issue"
     end
   end
 
