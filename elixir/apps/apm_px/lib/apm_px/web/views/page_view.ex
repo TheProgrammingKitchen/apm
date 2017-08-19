@@ -1,5 +1,5 @@
 defmodule ApmPx.Web.PageView do
-  alias ApmPx.SessionView
+  alias ApmPx.Web.SessionView
   use ApmPx.Web, :view
 
 
