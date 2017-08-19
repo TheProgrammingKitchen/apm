@@ -1,10 +1,9 @@
 # TODO
 
+# DONE
+
 ## Introduce a Key/Value store for Issues
 ## Introduce the ApmIssues.Repository
-
-
-# DONE
 
 ## Branch Feature0001-SimpleLogin
 
