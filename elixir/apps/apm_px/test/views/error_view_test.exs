@@ -1,6 +1,6 @@
 defmodule ApmPx.ErrorViewTest do
   use ExUnit.Case
-  use ApmPx.ConnCase, async: true
+  use ApmPx.Web.ConnCase, async: true
 
   require Logger
   Logger.debug "Using #{inspect @endpoint}"
@@ -9,17 +9,17 @@ defmodule ApmPx.ErrorViewTest do
   import Phoenix.View
 
   test "renders 404.html" do
-    assert render_to_string(ApmPx.ErrorView, "404.html", []) ==
+    assert render_to_string(ApmPx.Web.ErrorView, "404.html", []) ==
            "Page not found"
   end
 
   test "render 500.html" do
-    assert render_to_string(ApmPx.ErrorView, "500.html", []) ==
+    assert render_to_string(ApmPx.Web.ErrorView, "500.html", []) ==
            "Internal server error"
   end
 
   test "render any other" do
-    assert render_to_string(ApmPx.ErrorView, "505.html", []) ==
+    assert render_to_string(ApmPx.Web.ErrorView, "505.html", []) ==
            "Internal server error"
   end
 end

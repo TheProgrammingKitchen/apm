@@ -1,6 +1,6 @@
 defmodule ApmPx.PageControllerTest do
   require Logger
-  use ApmPx.ConnCase
+  use ApmPx.Web.ConnCase
   use TestHelper
 
   test "GET / prints a welcome message", %{conn: conn} do

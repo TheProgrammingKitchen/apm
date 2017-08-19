@@ -1,7 +1,7 @@
-defmodule ApmPx.SessionHelper do
+defmodule ApmPx.Web.SessionHelper do
   defmacro __using__(_opts) do
     quote do
-      use ApmPx.ConnCase, async: false
+      use ApmPx.Web.ConnCase, async: false
       use ExUnit.Case
       use Hound.Helpers
 

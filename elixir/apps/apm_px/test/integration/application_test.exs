@@ -1,5 +1,5 @@
 defmodule ApmPx.HoundBasicTests do
-  use ApmPx.SessionHelper
+  use ApmPx.Web.SessionHelper
 
   @logged_in_message  "You're logged in as 'hound user' in the role of a 'developer'"
   @logged_out_message "You're not logged in!"

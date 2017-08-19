@@ -6,10 +6,10 @@
 use Mix.Config
 
 # Configures the endpoint
-config :apm_px, ApmPx.Endpoint,
+config :apm_px, ApmPx.Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "/AhSfgTcZwZCeM0RvyMRks6lMgYLfEK3x4dQLBYw50mSHWpc3FWuGwAhLCaKtLLM",
-  render_errors: [view: ApmPx.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: ApmPx.Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ApmPx.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

@@ -1,5 +1,5 @@
 defmodule ApmPx.E2EIssuesTest do
-  use ApmPx.SessionHelper
+  use ApmPx.Web.SessionHelper
 
   describe "E2E Issues" do
 

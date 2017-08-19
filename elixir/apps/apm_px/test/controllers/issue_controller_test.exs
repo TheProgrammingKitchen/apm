@@ -1,6 +1,6 @@
 defmodule ApmPx.IssueControllerTest do
   require Logger
-  use ApmPx.ConnCase
+  use ApmPx.Web.ConnCase
   use TestHelper
 
   setup do
@@ -98,7 +98,7 @@ defmodule ApmPx.IssueControllerTest do
     
     session = conn 
               |> login_as("some user", "admin") 
-              |> get( ApmPx.Router.Helpers.new_child_path(conn,:new, uuid) )
+              |> get( ApmPx.Web.Router.Helpers.new_child_path(conn,:new, uuid) )
     
     assert html_response(session, 200) =~ "Add Sub Item for Item Number Two With Children"
   end

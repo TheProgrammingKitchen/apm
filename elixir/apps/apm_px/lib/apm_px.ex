@@ -16,7 +16,7 @@ defmodule ApmPx do
     children = [
       supervisor(ApmRepository.Dictionary,[]),
       supervisor(ApmIssues.Repo,[:issues]),
-      supervisor(ApmPx.Endpoint, [])
+      supervisor(ApmPx.Web.Endpoint, [])
     ]
 
     opts = [strategy: :one_for_one, name: ApmPx.Supervisor]
@@ -24,9 +24,4 @@ defmodule ApmPx do
     Supervisor.start_link(children, opts)
   end
 
-  @doc false
-  def config_change(changed, _new, removed) do
-    ApmPx.Endpoint.config_change(changed, removed)
-    :ok
-  end
 end
