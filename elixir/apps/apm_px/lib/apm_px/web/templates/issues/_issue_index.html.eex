@@ -4,7 +4,9 @@
     <ul class="link-buttons">
       <li><%= link "edit", to: "/issues/#{@issue.uuid}/edit", id: "edit-#{@issue.uuid}" %></li>
       <li><%= link "add sub task", to: "/issues/#{@issue.uuid}/new", id: "new-#{@issue.uuid}" %></li>
-      <li><%= link "delete", to: issues_path(@conn,:delete,@issue.uuid), method: :delete, id: "delete-#{@issue.uuid}" %></li>
+      <li><%= link "delete", to: issues_path(@conn,:delete,@issue.uuid), 
+                             method: :delete, data: [confirm: "Are you sure?"],
+                             id: "delete-#{@issue.uuid}" %></li>
     </ul>
   </div>
 
