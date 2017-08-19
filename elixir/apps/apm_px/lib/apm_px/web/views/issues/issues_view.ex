@@ -79,6 +79,13 @@ defmodule ApmPx.Web.IssuesView do
     issue.subject || ""
   end
 
+  @doc "Format parent subject"
+  def parent_subject(parent_id) do
+    with {issue,parent,children} <- ApmIssues.Repo.get(parent_id) do
+      issue.subject
+    end
+  end
+
   @doc "Format id"
   def id(issue) do
     issue.uuid || ""

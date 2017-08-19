@@ -15,18 +15,20 @@
   <ul class="attribute">
     <li><label>UUID:</label> <%= link @issue.uuid, to: "/issues/#{@issue.uuid}" %></li>
     <%= if @parent_id do %>
-    <li><label>Parent:</label> <%= link @parent_id, to: "/issues/#{@parent_id}" %></li>
+    <li><label>Parent:</label> <%= link parent_subject(@parent_id), to: "/issues/#{@parent_id}" %></li>
     <% end %>
   </ul>
   <div class="issue-description"><%= description(@issue, :markdown) %></div>
 
 
-  <div class="debug">
-    <p>Debug information:</p>
-    <code>
-      <%= inspect @issue %>
-    </code>
-  </div>
+  <!--
+    <div class="debug">
+      <p>Debug information:</p>
+      <code>
+        <%= inspect @issue %>
+      </code>
+    </div>
+  -->
   
   <div class="issue-children">
     <%= if( (@children |> Enum.count()) > 0) do %>
