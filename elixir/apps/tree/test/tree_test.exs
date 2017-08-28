@@ -3,7 +3,7 @@ defmodule TreeTest do
   doctest Tree
 
   setup _ do
-    Tree.drop!
+    Tree.drop_all!
     :ok
   end
 

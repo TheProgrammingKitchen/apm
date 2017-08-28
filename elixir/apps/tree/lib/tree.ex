@@ -50,7 +50,7 @@ defmodule Tree do
   @doc """
   Empty Registry
   """
-  def drop!() do
+  def drop_all!() do
     Tree.Registry.drop!()
   end
 
