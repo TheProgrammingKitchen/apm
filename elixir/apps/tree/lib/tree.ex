@@ -31,11 +31,17 @@ defmodule Tree do
   @doc"""
   Find the pid of a named tree. Returns :not_found if name
   is not registered.
-  ## Example
+  ## Examples
 
       iex> {:ok, tree} = Tree.new_tree("Project")
       iex> Tree.lookup("Project") == tree
       true
+
+      iex> {:ok, _tree} = Tree.new_tree("Project")
+      iex> Tree.lookup("Unknown Project")
+      :not_found
+
+
   """
   def lookup(name) do
     Tree.Registry.lookup(name)
