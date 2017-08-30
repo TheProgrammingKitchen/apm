@@ -17,11 +17,7 @@ defmodule Tree.Registry do
   end
 
   def register(node, parent) do
-    import Supervisor.Spec
-    %Node{id: id} = node
-    spec = supervisor(Tree.Node.Supervisor,[node], restart: :temporary, id: id)
-    {:ok, pid} = Supervisor.start_child(parent, spec)
-    GenServer.call(@registry, {:register, node, pid})
+    GenServer.call(@registry, {:register, node, parent})
   end
 
   def lookup(what) do
@@ -29,15 +25,19 @@ defmodule Tree.Registry do
   end
 
   def delete_all do
-    GenServer.cast(@registry, :delete_all)
+    GenServer.call(@registry, :delete_all)
   end
 
   def handle_call(:nodes, _from, nodes) do
     {:reply, nodes, nodes}
   end
 
-  def handle_call({:register, node, pid}, _from, nodes) do
-    {:reply, node, [{node.id, pid} | nodes]}
+  def handle_call({:register, node, parent}, _from, nodes) do
+    import Supervisor.Spec
+    %Node{id: id} = node
+    spec = supervisor(Tree.Node.Supervisor,[node], restart: :temporary, id: id)
+    {:ok, pid} = Supervisor.start_child(parent, spec)
+    {:reply, pid, [{node.id, pid} | nodes]}
   end
 
   def handle_call({:lookup, what}, _from, nodes) do
@@ -45,8 +45,12 @@ defmodule Tree.Registry do
     {:reply, node, nodes}
   end
 
-  # TODO: Stop nodes!
-  def handle_cast(:delete_all, nodes) do
-    {:noreply, []}
+  # TODO: Stop ALL nodes!
+  def handle_call(:delete_all, _from, nodes) do
+    nodes
+    |> Enum.each(fn({_id,pid}) -> 
+         Process.exit(pid,:kill) 
+    end)
+    {:reply,:ok, []}
   end
 end

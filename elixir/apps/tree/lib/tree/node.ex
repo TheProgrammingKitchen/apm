@@ -6,7 +6,7 @@ defmodule Tree.Node do
   end
 
   def data(pid) do
-    %{}
+    Agent.get(pid, fn(rec) -> rec.data end)
   end
 
   def start_link(args) do

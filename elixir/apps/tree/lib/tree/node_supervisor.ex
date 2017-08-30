@@ -12,4 +12,10 @@ defmodule Tree.Node.Supervisor do
     ]
     supervise( children, strategy: :one_for_one )
   end
+
+  def data(pid) do
+    [{_id,agent,_,_}|_] = Supervisor.which_children(pid) |> Enum.reverse
+    Tree.Node.data(agent)
+  end
+
 end
