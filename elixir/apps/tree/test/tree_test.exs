@@ -2,21 +2,21 @@ defmodule TreeTest do
   use ExUnit.Case
   doctest Tree
 
-  setup _ do
-    Tree.drop_all!
+  setup do
+    Tree.delete_all
     :ok
   end
 
+  test "starting Registry with the Application" do
+    assert Tree.Registry.nodes() == []
+  end
 
-  test "Tree is removed from registry on exit" do
-    {:ok, pid1} = Tree.new_tree("T1")
-    {:ok, pid2} = Tree.new_tree("T2")
-    assert Tree.lookup("T1") == pid1
-    assert Tree.lookup("T2") == pid2
-
-    Process.exit(pid2, :kill)
-
-    assert Tree.lookup("T1") == pid1
-    assert Tree.lookup("T2") == :not_found
+  test "registering a new node and lookup for it" do
+    Tree.register_node( Tree.Supervisor, "Root Node", %{ something: "different"} )
+    {found,root_node_pid} = Tree.lookup( fn({id,_pid}) -> 
+      id == "Root Node"
+    end)
+    assert is_pid(root_node_pid)
+    assert found == "Root Node"
   end
 end

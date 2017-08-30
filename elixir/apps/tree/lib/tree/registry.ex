@@ -1,63 +1,52 @@
 defmodule Tree.Registry do
   use GenServer
+  alias Tree.{Node}
 
-  def start_link([]) do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  @registry __MODULE__
+
+  def start_link(_args) do
+    GenServer.start_link( @registry, [], name: @registry )
   end
 
-  def init(registry) do
-    {:ok, registry}
+  def init(nodes) do
+    {:ok, nodes}
   end
 
-  def state() do
-    GenServer.call(__MODULE__, :state)
+  def nodes do
+    GenServer.call(@registry, :nodes)
   end
 
-  def new_tree(name) do
-    {:ok, GenServer.call(__MODULE__, {:new_tree, name})}
-  end
-
-  def lookup(name) do
-    GenServer.call(__MODULE__, {:lookup, name})
-  end
-
-  def drop!() do
-    GenServer.cast(__MODULE__, :drop)
-  end
-
-  #
-  # GenServer Callbacks
-  #
-
-  def handle_call(:state, _from, registry) do
-    {:reply, registry, registry}
-  end
-
-  def handle_call({:new_tree, name}, _from, registry) do
+  def register(node, parent) do
     import Supervisor.Spec
-    specs = worker(Tree.Bucket, [], id: name, restart: :temporary)
-    {:ok, pid} = Supervisor.start_child(Tree.Supervisor, specs)
-    Process.monitor(pid)
-    {:reply, pid, [ { name, pid } | registry ]}
+    %Node{id: id} = node
+    spec = supervisor(Tree.Node.Supervisor,[node], restart: :temporary, id: id)
+    {:ok, pid} = Supervisor.start_child(parent, spec)
+    GenServer.call(@registry, {:register, node, pid})
   end
 
-  def handle_call({:lookup, search}, _from, registry) do
-    found =
-    case Enum.find(registry, fn({name, _pid}) ->
-      name == search
-    end) do
-      nil -> :not_found
-      {_name, pid} -> pid
-    end
-    {:reply, found, registry}
+  def lookup(what) do
+    GenServer.call(@registry, {:lookup, what})
   end
 
-  def handle_cast(:drop, registry) do
-    Enum.each(registry, fn({_name, pid}) -> Agent.stop(pid) end)
+  def delete_all do
+    GenServer.cast(@registry, :delete_all)
+  end
+
+  def handle_call(:nodes, _from, nodes) do
+    {:reply, nodes, nodes}
+  end
+
+  def handle_call({:register, node, pid}, _from, nodes) do
+    {:reply, node, [{node.id, pid} | nodes]}
+  end
+
+  def handle_call({:lookup, what}, _from, nodes) do
+    node = Enum.find(nodes, what)
+    {:reply, node, nodes}
+  end
+
+  # TODO: Stop nodes!
+  def handle_cast(:delete_all, nodes) do
     {:noreply, []}
-  end
-
-  def handle_info({:DOWN, _ref, :process, pid, _reason}, registry) do
-    {:noreply, Enum.reject(registry, fn({_name,tree}) -> pid == tree end)}
   end
 end

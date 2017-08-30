@@ -1,57 +1,17 @@
 defmodule Tree do
-  @moduledoc """
-  TODO: Documentation for Tree.
-  """
 
-  @doc """
-  State of the tree
-  ## Example
+  alias Tree.{Registry, Node}
 
-      iex> Tree.root_nodes()
-      []
-
-  """
-  def root_nodes do
-    Tree.Registry.state()
+  def register_node( parent, id, data ) do
+    %Tree.Node{ id: id, data: data }
+    |> Tree.Registry.register(parent)
   end
 
-
-  @doc """
-  Register new tree
-  ## Example
-
-      iex> {:ok, tree} = Tree.new_tree("Project")
-      iex> is_pid(tree)
-      true
-  """
-  def new_tree(name) do
-    Tree.Registry.new_tree(name)
+  def lookup(what) do
+    Tree.Registry.lookup(what)
   end
 
-  @doc"""
-  Find the pid of a named tree. Returns :not_found if name
-  is not registered.
-  ## Examples
-
-      iex> {:ok, tree} = Tree.new_tree("Project")
-      iex> Tree.lookup("Project") == tree
-      true
-
-      iex> {:ok, _tree} = Tree.new_tree("Project")
-      iex> Tree.lookup("Unknown Project")
-      :not_found
-
-
-  """
-  def lookup(name) do
-    Tree.Registry.lookup(name)
+  def delete_all do
+    Tree.Registry.delete_all
   end
-
-  @doc """
-  Empty Registry
-  """
-  def drop_all!() do
-    Tree.Registry.drop!()
-  end
-
 end
