@@ -5,8 +5,7 @@ defmodule Tree.Node.Supervisor do
     Supervisor.start_link(Tree.Node.Supervisor, args)
   end
 
-  def init(args) do
-    %Tree.Node{data: _data, id: id} = args 
+  def init(%{id: id, data: _data} = args) do
     children = [
       worker( Tree.Node, [args], restart: :temporary, id: id ) 
     ]
@@ -17,5 +16,4 @@ defmodule Tree.Node.Supervisor do
     [{_id,agent,_,_}|_] = Supervisor.which_children(pid) |> Enum.reverse
     Tree.Node.data(agent)
   end
-
 end
