@@ -48,20 +48,21 @@ defmodule Tree.Registry do
 
   # TODO: Stop ALL CHILDREN
   def handle_call(:delete_all, _from, nodes) do
-    nodes
-    |> Enum.each(fn({_id,pid}) -> 
-         Process.exit(pid,:kill) 
+    nodes 
+    |> Enum.each(fn(child) -> 
+         {id,pid} = child
+         Process.exit(pid,:kill)
     end)
     {:reply,:ok, []}
   end
-
 
   #
   # private helpers
   #
   defp start_child_node(node,parent) do
     import Supervisor.Spec
-    spec = supervisor(Node.Supervisor,[node], restart: :temporary, id: node.id)
+    args = Map.merge(node, %{parent_pid: parent})
+    spec = supervisor(Node.Supervisor,[args], restart: :temporary, id: node.id)
     {:ok, pid} = Supervisor.start_child(parent, spec)
     pid
   end
