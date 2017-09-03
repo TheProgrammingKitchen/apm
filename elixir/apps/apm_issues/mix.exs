@@ -26,10 +26,6 @@ defmodule ApmIssues.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:uuid, "~> 1.1" },
-      {:poison, "~> 2.0"},
-
-      {:apm_repository, in_umbrella: true}
     ]
   end
 end

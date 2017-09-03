@@ -1,6 +1,21 @@
 # ApmIssues
 
-Please read `README-APM-ISSUES.md` or the `README.md` in the [root-path][] of
-the project.
+**TODO: Add description**
 
-[root-path]: https://github.com/TheProgrammingKitchen/apm/blob/master/README.md
+## Installation
+
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+by adding `apm_issues` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:apm_issues, "~> 0.1.0"}
+  ]
+end
+```
+
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
+be found at [https://hexdocs.pm/apm_issues](https://hexdocs.pm/apm_issues).
+
