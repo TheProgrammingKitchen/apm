@@ -1,5 +1,4 @@
 defmodule ApmIssues.Application do
-  require Logger
   @moduledoc false
   use Application
 

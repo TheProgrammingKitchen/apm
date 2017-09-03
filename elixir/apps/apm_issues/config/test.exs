@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :logger,
+config :logger, 
          level: :debug
 
 config :apm_issues, 

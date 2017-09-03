@@ -14,8 +14,6 @@ defmodule ApmPx do
     import Supervisor.Spec
 
     children = [
-      supervisor(ApmRepository.Dictionary,[]),
-      supervisor(ApmIssues.Repo,[:issues]),
       supervisor(ApmPx.Web.Endpoint, [])
     ]
 
