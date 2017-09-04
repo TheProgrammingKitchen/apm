@@ -3,6 +3,7 @@ defmodule ApmIssuesTest do
   doctest ApmIssues
   doctest ApmIssues.Registry
 
+  # Examples. See defp setup_example
   @node_1 %ApmIssues.Node{id: 1}
   @node_1_1 %ApmIssues.Node{id: 1.1}
   @node_1_2 %ApmIssues.Node{id: 1.2}
@@ -36,24 +37,14 @@ defmodule ApmIssuesTest do
   end
 
   test "children of a node with sub-nodes" do
-    ApmIssues.register_node(@node_1)
-    ApmIssues.register_node(@node_1_1, 1) 
-    ApmIssues.register_node(@node_1_2, 1) 
-    ApmIssues.register_node(@node_2)
-    ApmIssues.register_node(@node_2_1, 2) 
-    ApmIssues.register_node(@node_2_2, 2) 
+    setup_example()
 
     assert [1.1,1.2] == ApmIssues.children_ids(1)
     assert [2.1,2.2] == ApmIssues.children_ids(2)
   end
 
   test "stopping a sub node removes it from parent and registry" do
-    ApmIssues.register_node(@node_1)
-    ApmIssues.register_node(@node_1_1, 1) 
-    ApmIssues.register_node(@node_1_2, 1) 
-    ApmIssues.register_node(@node_2)
-    ApmIssues.register_node(@node_2_1, 2) 
-    ApmIssues.register_node(@node_2_2, 2) 
+    setup_example()
 
     ApmIssues.drop!(1.1)
 
@@ -62,12 +53,7 @@ defmodule ApmIssuesTest do
   end
 
   test "removing a node also removes it's children" do
-    ApmIssues.register_node(@node_1)
-    ApmIssues.register_node(@node_1_1, 1) 
-    ApmIssues.register_node(@node_1_2, 1) 
-    ApmIssues.register_node(@node_2)
-    ApmIssues.register_node(@node_2_1, 2) 
-    ApmIssues.register_node(@node_2_2, 2) 
+    setup_example()
 
     ApmIssues.drop!(1)
     _wait_for_sync = ApmIssues.Registry.state()
@@ -77,5 +63,29 @@ defmodule ApmIssuesTest do
     assert :not_found == ApmIssues.lookup(1.2)
   end
 
+  test "getting the parent-id of a node" do
+    setup_example()
+
+    assert 1 == ApmIssues.parent_id(1.1)
+    assert 1 == ApmIssues.parent_id(1.2)
+
+    assert 2 == ApmIssues.parent_id(2.1)
+    assert 2 == ApmIssues.parent_id(2.2)
+
+    assert :no_parent == ApmIssues.parent_id(2)
+    assert :no_parent == ApmIssues.parent_id(1)
+
+    assert :not_found == ApmIssues.parent_id("something not stored")
+  end
+
+
+  defp setup_example do
+    ApmIssues.register_node(@node_1)
+    ApmIssues.register_node(@node_1_1, 1) 
+    ApmIssues.register_node(@node_1_2, 1) 
+    ApmIssues.register_node(@node_2)
+    ApmIssues.register_node(@node_2_1, 2) 
+    ApmIssues.register_node(@node_2_2, 2) 
+  end
 
 end

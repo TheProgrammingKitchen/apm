@@ -13,4 +13,5 @@ defmodule ApmIssues.Node do
             attributes: nil,
             parent: nil,   
             supervisor: nil
+
 end

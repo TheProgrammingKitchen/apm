@@ -66,10 +66,20 @@ defmodule ApmIssues do
   end
 
   @doc"""
+  Get the parent-id of a node or :no_parent
+  """
+  def parent_id(node_id) do
+    case lookup(node_id) do
+      :not_found -> :not_found
+      {_child_id, _supervisor, data} -> ApmIssues.Node.Data.parent_id(data)
+    end
+  end
+
+  @doc"""
   Get list of ids of all children of the parent `node`
   """
   def children_ids(node) do
-    {_node_id,node_supervisor,_parent_data} = lookup(node)
+    {_node_id,node_supervisor,_data} = lookup(node)
     ApmIssues.Node.Supervisor.children_ids(node_supervisor)
   end
 
