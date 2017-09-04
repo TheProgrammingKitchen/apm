@@ -10,10 +10,9 @@ defmodule ApmIssues.Node.Data do
   See: `ApmIssues.Node`.
   """
   def start_link(%ApmIssues.Node{id: id, attributes: attributes}) do 
-    {:ok, agent} = Agent.start_link( fn() ->
+    Agent.start_link( fn() ->
       %ApmIssues.Issue{id: id, attributes: attributes}
     end)
-    {:ok, agent}
   end
 
   @doc"""

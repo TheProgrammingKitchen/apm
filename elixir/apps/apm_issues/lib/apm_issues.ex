@@ -7,7 +7,7 @@ defmodule ApmIssues do
   `ApmIssues.Application` starts the `ApmIssues.Registry` as
   a supervised worker.
   
-  You usually call function of this public API only but do 
+  You usually call functions of this public API only but do 
   not use `ApmIssues.Registry` directly.
   """
 
@@ -30,7 +30,25 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Lookup a `ApmIssues.Node` by `id`
+  Register `node` as a child of node whith `parent_id`.
+  """
+  def register_node(node, parent_id) do
+    parent = ApmIssues.lookup(parent_id) 
+    node
+    |> Map.merge( %{parent: parent} )
+    |> Registry.register_child(parent)
+  end
+
+  @doc"""
+  Get the data-agent pid of the given `node`.
+  """
+  def data_pid(node) do
+    Node.Supervisor.data_pid(node)
+  end
+
+  @doc"""
+  Lookup a `ApmIssues.Node` by `id` and returns a tuple of
+  `{ found_id, supervisor_pid, data_agent_pid }`.
 
   ## Examples:
       iex> ApmIssues.register_node( %ApmIssues.Node{id: 1} )
@@ -48,14 +66,25 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Drops the element with the given `id`. Returns `:ok` or `:not_found`
+  Get list of ids of all children of the parent `node`
+  """
+  def children_ids(node) do
+    {_node_id,node_supervisor,_parent_data} = lookup(node)
+    ApmIssues.Node.Supervisor.children_ids(node_supervisor)
+  end
+
+  @doc"""
+  Drops the element with the given `id` and all it's children.
+  Returns `:ok` or `:not_found`
   """
   def drop!(id) do
     case Registry.lookup(id) do
       nil -> 
         :not_found
-      {_id,sup,_dat} ->
-        Node.Supervisor.stop(sup)
+      {id_found,sup,_dat} ->
+        ApmIssues.children_ids(id_found)
+          |> Enum.each( &ApmIssues.drop!(&1) ) 
+        Process.exit(sup,:kill)
         :ok
     end
   end

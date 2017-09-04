@@ -1,7 +1,9 @@
 defmodule ApmIssues.Registry do
+  alias ApmIssues.{Node}
+
   @moduledoc"""
   Holds a `Map` of all registered nodes. The structure of this Map is:
-      {id, pid_of_nodes_supervisor, pid_of_nodes_data_agent}
+      id => {id, pid_of_nodes_supervisor, pid_of_nodes_data_agent}
 
   When new nodes are registered, their processes will be monitored
   and the node will be removed from the registry whenever a node
@@ -27,9 +29,14 @@ defmodule ApmIssues.Registry do
   @doc"""
   Get the current state of the Registry
 
-  ## Example:
+  ## Examples:
       iex> ApmIssues.Registry.state()
       %{}
+
+      iex> ApmIssues.register_node( %ApmIssues.Node{id: 1, attributes: %{foo: :bar}})
+      iex> %{ 1 => {1, supervisor, data}} = ApmIssues.Registry.state()
+      iex> [1, true, true] = [1, is_pid(supervisor), is_pid(data)]
+      [1,true,true]
   """
   def state(server \\ @registry) do
     GenServer.call(server, :state) 
@@ -43,14 +50,29 @@ defmodule ApmIssues.Registry do
     GenServer.cast(server, {:register, node})
   end
 
+  @doc"""
+  Register a new child `ApmIssues.Node`. The function is called by
+  `ApmIssues.register(node,parent)`, so don't call it directly.
+  """
+  def register_child(server \\ @registry, node, parent) do
+    GenServer.cast(server, {:register_child, node, parent})
+  end
 
   @doc"""
   Lookup a previous registered `ApmIssue.Node` by id.
-  The function is called by `ApmIssues.register(node)`, 
-  so don't call it directly.
+  The function is called by `ApmIssues.lookup(node)`, 
+  so ther is no need to call it directly.
   """
   def lookup(server \\ @registry, id) do
     GenServer.call(server, {:lookup, id})
+  end
+
+  @doc"""
+  Stop the node with `id`.
+  """
+  def stop_node(server \\ @registry, id) do
+    {^id, supervisor, _data} = lookup(server,id)
+    GenServer.cast(server, {:stop_node, supervisor})
   end
 
   @doc"""
@@ -90,15 +112,27 @@ defmodule ApmIssues.Registry do
     {:noreply, Map.put(state, id, {id, data, supervisor})}
   end
 
+  def handle_cast({:register_child, child, parent }, state) do
+    {_id, parent_supervisor, _parent_data} = parent
+    {:ok, {_id,child_s,child_d}} = Node.Supervisor.register_child(parent_supervisor, child)
+    Process.monitor(child_s)
+    Process.monitor(child_d)
+    {:noreply, state |> Map.put(child.id, {child.id, child_s, child_d})}
+  end
+
+  def handle_cast({:stop_node, supervisor}, state) do
+    Supervisor.stop( supervisor )
+    {:noreply, state }
+  end
 
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     case Map.values(state) 
-           |> Enum.find( fn({_id,sup,_dat}) ->
-                sup == pid
-              end)
+           |> Enum.find( fn({_id,sup,_dat}) -> sup == pid end)
     do
-      nil -> {:noreply, state}
-      {id,_sup,_dat} -> {:noreply, Map.delete(state,id)}
+      nil -> 
+        {:noreply, state}
+      {id,_sup,_dat} ->
+        {:noreply, Map.delete(state,id)}
     end
   end
 
@@ -106,7 +140,7 @@ defmodule ApmIssues.Registry do
     state
     |> Map.to_list
     |> Enum.each( fn({_id, {_iid, supervisor, _data}}) ->
-      ApmIssues.Node.Supervisor.stop(supervisor)
+      if Process.alive?(supervisor), do: Node.Supervisor.stop(supervisor)
     end)
   end
 end
