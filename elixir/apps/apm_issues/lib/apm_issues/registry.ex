@@ -1,4 +1,6 @@
 defmodule ApmIssues.Registry do
+  require Logger
+
   alias ApmIssues.{Node}
 
   @moduledoc"""
@@ -68,6 +70,18 @@ defmodule ApmIssues.Registry do
   end
 
   @doc"""
+  Find by attribute. Searches inside `data.attributes` for the
+  given search-term.
+
+  Returns the node tuple if search for the given attribute was
+  successful, :not_found if nothing was found, and :no_argument
+  if no node has a definition of `attribute` in `attributes`.
+  """
+  def find_by(server \\ @registry, attribute, search_term) do
+    GenServer.call(server, {:find_by, attribute, search_term})
+  end
+
+  @doc"""
   Stop the node with `id`.
   """
   def stop_node(server \\ @registry, id) do
@@ -94,6 +108,15 @@ defmodule ApmIssues.Registry do
 
   def handle_call({:lookup, id}, _from, state) do
     {:reply, Map.get(state, id), state}
+  end
+
+  def handle_call({:find_by, attribute, search_term}, _from, state) do
+    return = 
+      case find_by_attribute(state, attribute, search_term) do
+        nil -> :not_found
+        {_id,found} -> found
+      end
+    {:reply, return, state}
   end
 
   def handle_call(:drop, _from, state) do
@@ -142,5 +165,17 @@ defmodule ApmIssues.Registry do
     |> Enum.each( fn({_id, {_iid, supervisor, _data}}) ->
       if Process.alive?(supervisor), do: Node.Supervisor.stop(supervisor)
     end)
+  end
+
+  defp find_by_attribute(state, attribute, search_term) do
+    state
+      |> Map.to_list
+      |> Enum.find( fn( {_key, {_id, _sup, data}} ) ->
+        attr = ApmIssues.Node.Data.attributes(data)
+        case attr[attribute] do
+          nil -> false
+          a -> a == search_term
+        end
+      end)
   end
 end

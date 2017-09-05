@@ -2,22 +2,20 @@ defmodule ApmPx.Web.IssuesView do
   use ApmPx.Web, :view
   require Logger
   
-  alias ApmIssues.{Repo}
-
   @doc"""
   Render all root-issues recursively
   """
   def render_issues_index(conn) do
-    Repo.root_issues
+    ApmIssues.roots
     |> Enum.map( fn(issue) -> render_issue(conn,issue) end)
   end
 
   defp render_issue(conn,issue) do
-    case issue do 
-      {uuid, {issue, parent, children}} ->
+    case ApmIssues.lookup(issue) do 
+      {uuid, _supervisor, _data} ->
           render("_issue_index.html", 
-            conn: conn, id: uuid, parent_id: parent, 
-            issue: issue, children: children
+            conn: conn, id: uuid, parent_id: ApmIssues.parent_id(uuid), 
+            issue: ApmIssues.data(issue), children: ApmIssues.children_ids(uuid)
           )
       {uuid, :not_found} -> "Issue #{uuid} not found"
     end
@@ -29,11 +27,11 @@ defmodule ApmPx.Web.IssuesView do
   def render_show_issue(conn) do
     params = conn.params
     item_id = params["id"]
-    case Repo.get(item_id) do
+    case ApmIssues.lookup(item_id) do
       :not_found -> "Issue #{item_id} not found"
-      {entity, parent, children} -> render(
-        "_issue_index.html", conn: conn, id: item_id, issue: entity,
-        parent_id: parent, children: children
+      _ -> render(
+        "_issue_index.html", conn: conn, id: item_id, issue: ApmIssues.data(item_id),
+        parent_id: ApmIssues.parent_id(item_id), children: ApmIssues.children_ids(item_id)
       )
     end
   end
@@ -44,8 +42,8 @@ defmodule ApmPx.Web.IssuesView do
   def render_edit_issue(conn) do
     params = conn.params
     item_id = params["id"]
-    {issue, _parent_id, _children} = Repo.get(item_id)
-    form(conn, {:update, issue })
+    {issue, _sup, _data} = ApmIssues.lookup(item_id)
+    form(conn, {:update, ApmIssues.data(issue) })
   end
 
 
@@ -55,8 +53,10 @@ defmodule ApmPx.Web.IssuesView do
   def render_children(conn,children) do
     children
     |> Enum.map( fn(child_id) -> 
-      child = ApmIssues.Repo.get(child_id)
-      render_issue(conn,{child_id, child}) 
+      case ApmIssues.lookup(child_id) do
+        :not_found -> ""
+        _ -> render_issue(conn,child_id) 
+      end
     end)
   end
 
@@ -64,9 +64,9 @@ defmodule ApmPx.Web.IssuesView do
   Render HTML-Form for issue.
   Default to POST new issue (create).
   """
-  def form(conn,{action, changeset} \\ {:create, %ApmIssues.Issue{}} ) do
+  def form(conn,{action, changeset} \\ {:create, %ApmIssues.Node{}} ) do
     path = case action do
-      :update -> issues_path(conn, :update, changeset.uuid)
+      :update -> issues_path(conn, :update, changeset.id)
       :create -> issues_path(conn, :create)
       _ -> Logger.error "Action #{action} not supported"
     end
@@ -76,24 +76,33 @@ defmodule ApmPx.Web.IssuesView do
 
   @doc "Format subject"
   def subject(issue) do
-    issue.subject || ""
+    case issue.attributes do
+      nil  -> ""
+      attr -> attr.subject || ""
+    end
   end
 
   @doc "Format parent subject"
   def parent_subject(parent_id) do
-    with {issue,parent,children} <- ApmIssues.Repo.get(parent_id) do
-      issue.subject
+    with {issue,_sup,_dat} <- ApmIssues.lookup(parent_id) do
+      ApmIssues.data(issue).attributes.subject
     end
   end
 
   @doc "Format id"
   def id(issue) do
-    issue.uuid || ""
+    case issue do
+      nil -> ""
+      _   -> issue.id 
+    end
   end
 
   @doc "Format description"
   def description(issue) do
-    Map.merge(%{description: ""},issue).description
+    case issue.attributes do
+      nil  -> ""
+      attr -> Map.merge(%{description: ""},attr).description
+    end
   end
 
   @doc "Render description as markdown `description(issue, :markdown)`"
@@ -104,9 +113,8 @@ defmodule ApmPx.Web.IssuesView do
   end
 
   @doc "Get title of a given id"
-  def subject_for_id(uuid) do
-    {issue, _parent_id, _children} = ApmIssues.Repo.get(uuid)
-    issue.subject
+  def subject_for_id(id) do
+    ApmIssues.attributes(id).subject || ""
   end
 
 end

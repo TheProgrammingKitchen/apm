@@ -78,6 +78,14 @@ defmodule ApmIssuesTest do
     assert :not_found == ApmIssues.parent_id("something not stored")
   end
 
+  test "updating attributes of a node" do
+    {:ok, _node} = ApmIssues.register_node( %ApmIssues.Node{id: 1, attributes: %{ foo: :bar}} )
+    assert ApmIssues.attributes(1) == %{ foo: :bar }
+
+    ApmIssues.update(1, %{ foo: :baz } )
+    assert ApmIssues.attributes(1) == %{ foo: :baz }
+  end
+
 
   defp setup_example do
     ApmIssues.register_node(@node_1)

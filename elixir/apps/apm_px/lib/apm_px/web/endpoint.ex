@@ -6,9 +6,12 @@ defmodule ApmPx.Web.Endpoint do
 
   socket "/socket", ApmPx.Web.UserSocket
 
-  unless System.get_env("MIX_ENV") == "production" do
+  unless Mix.env == :production do
     Logger.info "STARTING WITH SEEDS FROM FIXTURE FILES ./data/fixutures/issues.json"
-    ApmIssues.seed # For development and testing only
+    Application.ensure_all_started(:apm_issues)
+    ApmPx.Fixtures.read
+    |> ApmIssues.seed # For development and testing only
+    Logger.debug "SEEDED " <> inspect(ApmIssues.Registry.state())
   end
 
   plug Plug.Static,

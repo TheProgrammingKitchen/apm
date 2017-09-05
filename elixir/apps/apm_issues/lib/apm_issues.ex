@@ -66,6 +66,90 @@ defmodule ApmIssues do
   end
 
   @doc"""
+  Find by :attribute
+
+  ## Example:
+      iex> ApmIssues.register_node( %ApmIssues.Node{id: 1, attributes: %{subject: "Subject one"}} )
+      iex> ApmIssues.register_node( %ApmIssues.Node{id: 1.1, attributes: %{subject: "Subject one.one"}}, 1 )
+      iex> ApmIssues.find_by(:subject, "Not there")
+      :not_found
+      iex> ApmIssues.find_by(:not_existing, "Attribute")
+      :not_found
+      iex> {node,_sup,_dat} = ApmIssues.find_by(:subject,"Subject one")
+      iex> node
+      1
+      iex> {node,_sup,_dat} = ApmIssues.find_by(:subject,"Subject one.one")
+      iex> node
+      1.1
+  """
+  def find_by(attr_name, search) do
+    Registry.find_by(attr_name, search)
+  end
+
+  @doc"""
+  Get all root nodes
+
+  ## Example:
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1 } )
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1.1 }, 1 )
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2 } )
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2.2 }, 2 )
+     iex> ApmIssues.roots()
+     [1,2]
+  """
+  def roots() do
+    Registry.state
+      |> Enum.filter( fn({id, _node}) ->
+        ApmIssues.parent_id(id) == :no_parent
+      end)
+      |> Enum.map( fn({id, _node}) -> id end)
+  end
+
+  @doc"""
+  Get data of a nodes
+
+  ## Example:
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
+     iex> ApmIssues.data(1)
+     %ApmIssues.Issue{attributes: %{foo: :bar}, id: 1}
+  """
+  def data(id) do
+    #{%ApmIssues.Issue{attributes: %{foo: :bar}, id: 1}, [parent: nil]}
+    {node,_parent} = case lookup(id) do
+      :not_found -> :not_found
+      {_node, _sup, data} -> ApmIssues.Node.Data.data(data)
+    end
+    node
+  end
+
+  @doc"""
+  Get attributes of a data nodes
+
+  ## Example:
+     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
+     iex> ApmIssues.attributes(1)
+     %{foo: :bar}
+  """
+  def attributes(id) do
+     case lookup(id) do
+      :not_found -> :not_found
+      {_node, _sup, data} -> 
+        {node,_parent} = ApmIssues.Node.Data.data(data)
+        node.attributes || %{}
+    end
+  end
+
+  @doc"""
+  Update attributes of a node.
+  """
+  def update(id, changeset) do
+     case lookup(id) do
+      :not_found -> :not_found
+      {_node, _sup, data} -> ApmIssues.Node.Data.update(data, changeset)
+    end
+  end
+
+  @doc"""
   Get the parent-id of a node or :no_parent
   """
   def parent_id(node_id) do
@@ -100,10 +184,16 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Not implemented yet. Will be needed by the Phoenix implementation.
+  seeds some test data for ApmPx Phoenix application
   """
-  def seed() do
-    Logger.debug inspect(__MODULE__) <> ".seed() is not implemented."
+  def seed(issues) do
+    Enum.each(issues, fn(issue) ->
+      case issue do
+        %ApmIssues.Node{ id: id, attributes: attributes} -> ApmIssues.register_node(issue)
+        {node, parent} -> ApmIssues.register_node(node, parent)
+        _ -> Logger.warn("UNKNOWN ISSUE IN SEED: " <> inspect(issue))
+      end
+    end)
   end
 
   #
@@ -117,11 +207,12 @@ defmodule ApmIssues do
   end
   
   defp start_node_supervisor(node) do
+    attr = Map.merge( %{id: UUID.uuid1()}, node )
     import Supervisor.Spec
     spec = supervisor(
              Node.Supervisor, 
-             [node], 
-             id: node.id,  
+             [attr], 
+             id: attr.id, 
              restart: :temporary,
           )
 

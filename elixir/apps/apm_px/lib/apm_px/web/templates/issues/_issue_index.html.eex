@@ -2,19 +2,19 @@
 
   <div class="issue-links">
     <ul class="link-buttons">
-      <li><%= link gettext("edit"), to: "/issues/#{@issue.uuid}/edit", id: "edit-#{@issue.uuid}" %></li>
-      <li><%= link gettext("add sub task"), to: "/issues/#{@issue.uuid}/new", id: "new-#{@issue.uuid}" %></li>
-      <li><%= link gettext("delete"), to: issues_path(@conn,:delete,@issue.uuid), 
+      <li><%= link gettext("edit"), to: "/issues/#{@issue.id}/edit", id: "edit-#{@issue.id}" %></li>
+      <li><%= link gettext("add sub task"), to: "/issues/#{@issue.id}/new", id: "new-#{@issue.id}" %></li>
+      <li><%= link gettext("delete"), to: issues_path(@conn,:delete,@issue.id), 
                              method: :delete, data: [confirm: gettext("Are you sure?")],
-                             id: "delete-#{@issue.uuid}" %></li>
+                             id: "delete-#{@issue.id}" %></li>
     </ul>
   </div>
 
-  <h2><%= @issue.subject %></h2>
+  <h2><%= @issue.attributes.subject %></h2>
 
   <ul class="attribute">
-    <li><label>UUID:</label> <%= link @issue.uuid, to: "/issues/#{@issue.uuid}" %></li>
-    <%= if @parent_id do %>
+    <li><label>UUID:</label> <%= link @issue.id, to: "/issues/#{@issue.id}" %></li>
+    <%= if @parent_id != :no_parent do %>
     <li><label>Parent:</label> <%= link parent_subject(@parent_id), to: "/issues/#{@parent_id}" %></li>
     <% end %>
   </ul>
@@ -31,11 +31,12 @@
   -->
   
   <div class="issue-children">
-    <%= if( (@children |> Enum.count()) > 0) do %>
+    <%= unless( @children == :not_found ) do %>
       <div class="children">
         <%= ApmPx.Web.IssuesView.render_children(@conn,@children) %> 
       </div>
     <% end %>
   </div>
+
 
 </div>
