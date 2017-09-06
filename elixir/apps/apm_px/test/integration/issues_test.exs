@@ -1,7 +1,14 @@
 defmodule ApmPx.E2EIssuesTest do
+  require Logger
   use ApmPx.Web.SessionHelper
 
   describe "E2E Issues" do
+
+    setup _ do
+      ApmIssues.Registry.drop!
+      ApmPx.Fixtures.read |> ApmIssues.seed
+      :ok
+    end
 
     @tag :hound
     test "GET /issues lists loaded issues when logged in" do
@@ -50,7 +57,7 @@ defmodule ApmPx.E2EIssuesTest do
       login_as("user", "developer")
       navigate_to("http://localhost:4000/issues/new")
 
-      ApmIssues.drop!
+      ApmIssues.Registry.drop!
 
       fill_field({:name, "issue[subject]"}, "New Subject")
       fill_field({:name, "issue[description]"}, "Original Description")

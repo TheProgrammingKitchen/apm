@@ -24,7 +24,7 @@ defmodule ApmPx.Mixfile do
       mod: {ApmPx, []},
       applications: [
         :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-        :apm_repository
+        :apm_issues
       ]
     ]
   end
@@ -45,7 +45,7 @@ defmodule ApmPx.Mixfile do
      {:cowboy, "~> 1.0"},
      {:hound, "~> 1.0"},
      {:earmark, "~> 1.0"},
-     {:apm_repository, in_umbrella: true },
+     {:poison, "~> 2.0"},
      {:apm_issues, in_umbrella: true },
      {:apm_user, in_umbrella: true }
     ]
