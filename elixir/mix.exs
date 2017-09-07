@@ -21,14 +21,14 @@ defmodule Apm.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.16.0", only: :dev, runtime: false}
     ]
   end
 
   defp docs do
     [
       #main: "index", # The main page in the docs
-      logo: "apps/apm_px/web/static/assets/images/apm-logo-top.png",
+      logo: "apps/apm_px/assets/priv/static/images/apm-logo-top.png",
       extras: [
         "README.md",
         "apps/apm_issues/README-APM-ISSUES.md",

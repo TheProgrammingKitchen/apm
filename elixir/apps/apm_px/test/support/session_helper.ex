@@ -8,8 +8,9 @@ defmodule ApmPx.Web.SessionHelper do
       hound_session()
 
       setup do
-        ApmIssues.drop!
-        ApmIssues.seed
+        ApmIssues.Registry.drop!
+        ApmPx.Fixtures.read
+        |> ApmIssues.seed
         :ok
       end
 

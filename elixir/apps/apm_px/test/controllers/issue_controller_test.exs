@@ -4,8 +4,9 @@ defmodule ApmPx.IssueControllerTest do
   use TestHelper
 
   setup do
-    ApmIssues.drop!()
-    ApmIssues.seed()
+    ApmIssues.Registry.drop!()
+    ApmPx.Fixtures.read()
+    |> ApmIssues.seed()
     :ok
   end
 
@@ -51,12 +52,12 @@ defmodule ApmPx.IssueControllerTest do
              %{issue: %{ subject: "New Issue", description: "Some text"}} 
            )
 
-    {uuid, {issue, parent, children}} = ApmIssues.Repo.find_by_subject("New Issue") |> hd
-    assert String.match?(uuid, ~r/^[0-9a-f]{8}-/)
-    assert issue.subject == "New Issue"
-    assert issue.description == "Some text"
-    assert children == []
-    assert parent == nil
+    {issue, _sup, _data} = ApmIssues.find_by(:subject, "New Issue") 
+    assert String.match?(issue, ~r/^[0-9a-f]{8}-/)
+    assert ApmIssues.attributes(issue).subject == "New Issue"
+    assert ApmIssues.attributes(issue).description == "Some text"
+    assert ApmIssues.children_ids(issue) == []
+    assert ApmIssues.parent_id(issue) == :no_parent
   end
 
   test "POST /issues/:id updates an existing issue", %{conn: conn} do
@@ -65,47 +66,57 @@ defmodule ApmPx.IssueControllerTest do
       |> post( "/issues", 
                %{issue: %{ subject: "Issue123", description: "Original text"}} 
              )
-      {uuid, {_data, _parent, _children}} = (ApmIssues.Repo.find_by_subject("Issue123")) |> hd
+      {id, _sup, _data} = (ApmIssues.find_by(:subject, "Issue123")) 
  
       conn 
         |> login_as("some user", "admin") 
-        |> post( "/issues/#{uuid}", 
+        |> post( "/issues/#{id}", 
                  %{issue: %{ subject: "Issue123", description: "Modified text"}} 
                )
 
-      {uuid, {entity,_parent,_children}} = ApmIssues.Repo.find_by_subject("Issue123") |> hd
+      {entity,_sup,_data} = ApmIssues.find_by(:subject, "Issue123") 
  
-      assert String.match?(uuid, ~r/^[0-9a-f]{8}-/)
-      assert entity.subject == "Issue123"
-      assert entity.description == "Modified text"
+      assert String.match?(entity, ~r/^[0-9a-f]{8}-/)
+      assert ApmIssues.attributes(entity).subject == "Issue123"
+      assert ApmIssues.attributes(entity).description == "Modified text"
   end
 
   test "DELETE /issues/:id deletes an issue and its children", %{conn: conn} do
-    {uuid, {_issue, _parent_id, children}} = (ApmIssues.Repo.find_by_subject("Item Number Two With Children")) |> hd
-    assert uuid == "12345678-1234-1234-1234-123456789abd"
-    assert Enum.count(children) == 2
-    cnt = ApmIssues.Repo.count 
+    conn 
+      |> login_as("some user", "admin") 
+      |> get( "/issues" )
+
+
+    {id, _sup, _data} =  ApmIssues.find_by(:subject, "Item Number Two With Children")
+    assert id == "12345678-1234-1234-1234-123456789abd"
+    assert 2 == ApmIssues.children_ids(id) |> Enum.count
+    cnt = ApmIssues.Registry.state() |> Map.keys |> Enum.count
 
     conn
-      |> delete( "/issues/#{uuid}" )
+      |> delete( "/issues/#{id}" )
 
-    assert ApmIssues.Repo.get(uuid) == :not_found
-    assert ApmIssues.Repo.count == cnt - 3
+    Process.sleep(500)
+
+    cnt_after = ApmIssues.Registry.state() |> Map.keys |> Enum.count
+    assert cnt - 3 == cnt_after
+
+    assert :not_found == ApmIssues.lookup(id)
+
   end
 
   test "GET /issues/:parent_id/new renders the form with parent field", %{conn: conn} do
-    {uuid, _} = ApmIssues.Repo.find_by_subject("Item Number Two With Children") |> hd
+    {id,_sup, _dat} = ApmIssues.find_by(:subject, "Item Number Two With Children") 
     
     session = conn 
               |> login_as("some user", "admin") 
-              |> get( ApmPx.Web.Router.Helpers.new_child_path(conn,:new, uuid) )
+              |> get( ApmPx.Web.Router.Helpers.new_child_path(conn,:new, id) )
     
     assert html_response(session, 200) =~ "Add Sub Item for Item Number Two With Children"
   end
 
   test "POST /issues/ with parent_id creates a new child", %{conn: conn} do
-    {_issue, _parent, children } = ApmIssues.Repo.get("12345678-1234-1234-1234-123456789abd")
-    before_count = Enum.count(children)
+    {_id, _sup, _data } = ApmIssues.lookup("12345678-1234-1234-1234-123456789abd")
+    before_count = ApmIssues.Registry.state() |> Map.keys |> Enum.count
 
     conn 
     |> login_as("some user", "admin") 
@@ -113,8 +124,9 @@ defmodule ApmPx.IssueControllerTest do
              %{issue: %{parent_id: "12345678-1234-1234-1234-123456789abd", subject: "Sub Issue", description: "New Child"}} 
            )
 
-    {_issue,_parent,children_after} = ApmIssues.Repo.get("12345678-1234-1234-1234-123456789abd") 
-    assert children_after |> Enum.count  == before_count + 1
+    {_id,_sup,_data} = ApmIssues.lookup("12345678-1234-1234-1234-123456789abd") 
+    count_after = ApmIssues.Registry.state() |> Map.keys |> Enum.count
+    assert before_count + 1 == count_after
   end
 
 end

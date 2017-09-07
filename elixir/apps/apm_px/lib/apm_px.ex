@@ -11,12 +11,11 @@ defmodule ApmPx do
 
   @doc false
   def start(_type, _args) do
+    Application.ensure_all_started(:apm_issues)
     import Supervisor.Spec
 
     children = [
-      supervisor(ApmRepository.Dictionary,[]),
-      supervisor(ApmIssues.Repo,[:issues]),
-      supervisor(ApmPx.Web.Endpoint, [])
+      supervisor(ApmPx.Web.Endpoint, []),
     ]
 
     opts = [strategy: :one_for_one, name: ApmPx.Supervisor]

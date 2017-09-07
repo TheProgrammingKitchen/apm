@@ -1,6 +1,4 @@
 defmodule ApmPx.Web.IssuesController do
-  require Logger
-
   @moduledoc """
   Routes handled by this controller
 
@@ -40,32 +38,33 @@ defmodule ApmPx.Web.IssuesController do
   """
   def create(conn, params) do
     {subject,options,parent} = cast(params["issue"])
-    entity = ApmIssues.Issue.new( Map.merge(options,%{subject: subject}))
-  
-    ApmIssues.Repo.insert(entity.uuid,entity,parent,[]) 
+    entity = %ApmIssues.Node{ id: UUID.uuid1(), attributes: Map.merge(options,%{subject: subject}) }
    
     if parent do
-      ApmIssues.Repo.add_child(parent,entity.uuid)
+      ApmIssues.register_node( entity, parent )
+    else
+      ApmIssues.register_node(entity)
     end
-    
+
     conn 
       |> put_flash(:success, gettext("Issue successfully created"))
-      |> redirect(to: "/issues/#{entity.uuid}")
+      |> redirect(to: "/issues/#{entity.id}")
   end
 
   @doc """
   Edit an issue
   """
-  def edit(conn, _params) do
-    render conn, "edit.html"
+  def edit(conn, params) do
+    render conn, "edit.html", changeset: ApmIssues.lookup(params["id"])
   end
 
   @doc """
   Update issue
   """
   def update(conn, params) do
-    {subject,options,_parent_id} = cast(params["issue"])
-    ApmIssues.Issue.update( params["id"], subject, options )
+    {subject,options,_parent} = cast(params["issue"])
+    entity = %ApmIssues.Node{ id: UUID.uuid1(), attributes: Map.merge(options,%{subject: subject}) }
+    ApmIssues.update(params["id"], entity.attributes)
     conn 
       |> put_flash(:success, gettext("Issue successfully updated"))
       |> redirect(to: "/issues/#{params['id']}")
@@ -75,8 +74,8 @@ defmodule ApmPx.Web.IssuesController do
   Deleat an issue and its children
   """
   def delete(conn, params) do
-    uuid = params["id"]
-    ApmIssues.Repo.delete(uuid)
+    id = params["id"]
+    ApmIssues.drop!(id)
     conn
       |> put_flash(:success, gettext("Issue deleted"))
       |> redirect(to: issues_path(conn, :index))
