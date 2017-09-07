@@ -37,7 +37,7 @@ defmodule ApmIssues.Registry do
 
       iex> ApmIssues.register_node( %ApmIssues.Node{id: 1, attributes: %{foo: :bar}})
       iex> %{ 1 => {1, supervisor, data}} = ApmIssues.Registry.state()
-      iex> [1, true, true] = [1, is_pid(supervisor), is_pid(data)]
+      iex> [1, is_pid(supervisor), is_pid(data)]
       [1,true,true]
   """
   def state(server \\ @registry) do
@@ -63,7 +63,8 @@ defmodule ApmIssues.Registry do
   @doc"""
   Lookup a previous registered `ApmIssue.Node` by id.
   The function is called by `ApmIssues.lookup(node)`, 
-  so ther is no need to call it directly.
+  so there is no need to call it directly.
+  Lookup returns a tuple of `{ID, SUPERVISOR-PID, DATA-AGENT-PID}`
   """
   def lookup(server \\ @registry, id) do
     GenServer.call(server, {:lookup, id})

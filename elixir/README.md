@@ -61,6 +61,15 @@ The _Phoenix-Frontend_ application
 
 # TODO
 
+## Integration Tests
+
+Because the Phoenix application has to be started before running the integration tests,
+the tests works only if you just have started a newly compiled phx.server. After you
+fiddled around with the application data, the tests might fail and you have to restart
+the application phx.server.
+
+* Find a way to reset the app befor running integration tests.
+
  See [Pivotal Tracker][] and [Github][]
 
 
