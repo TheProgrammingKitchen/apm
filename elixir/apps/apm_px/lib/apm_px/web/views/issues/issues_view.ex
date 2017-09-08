@@ -17,10 +17,11 @@ defmodule ApmPx.Web.IssuesView do
             conn: conn, id: uuid, parent_id: ApmIssues.parent_id(uuid), 
             issue: ApmIssues.data(issue), children: ApmIssues.children_ids(uuid)
           )
-      {uuid, :not_found} -> "Issue #{uuid} not found"
+      {uuid, :not_found} -> display_not_found(uuid)
     end
   end
 
+  
   @doc"""
   Render one issue recursively
   """
@@ -28,7 +29,7 @@ defmodule ApmPx.Web.IssuesView do
     params = conn.params
     item_id = params["id"]
     case ApmIssues.lookup(item_id) do
-      :not_found -> "Issue #{item_id} not found"
+      :not_found -> display_not_found(item_id)
       _ -> render(
         "_issue_index.html", conn: conn, id: item_id, issue: ApmIssues.data(item_id),
         parent_id: ApmIssues.parent_id(item_id), children: ApmIssues.children_ids(item_id)
@@ -54,7 +55,7 @@ defmodule ApmPx.Web.IssuesView do
     children
     |> Enum.map( fn(child_id) -> 
       case ApmIssues.lookup(child_id) do
-        :not_found -> ""
+        :not_found -> display_not_found(child_id)
         _ -> render_issue(conn,child_id) 
       end
     end)
@@ -115,6 +116,10 @@ defmodule ApmPx.Web.IssuesView do
   @doc "Get title of a given id"
   def subject_for_id(id) do
     ApmIssues.attributes(id).subject || ""
+  end
+
+  defp display_not_found(uuid) do
+    raw "<header><p class='alert alert-danger'>Issue <b>#{uuid}</b> not found.</p></header>"
   end
 
 end
