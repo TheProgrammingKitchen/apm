@@ -14,7 +14,12 @@
   <body>
     <div class="container">
       <header class="header">
+        <div class="login">
+          <%= ApmPx.Web.SessionView.render_session(@conn) %>
+        </div>
+        <div class="logo-container">
         <span class="logo"></span>
+        </div>
         <div class="menu-and-login">
           <nav class="top-navigation" role="navigation">
             <ul id="main-menu" class="nav nav-pills pull-left">
@@ -23,9 +28,6 @@
               <li><a href="/issues/new">Create Issue</a></li>
             </ul>
           </nav>
-          <div class="login">
-            <%= ApmPx.Web.SessionView.render_session(@conn) %>
-          </div>
         </div>
       </header>
 

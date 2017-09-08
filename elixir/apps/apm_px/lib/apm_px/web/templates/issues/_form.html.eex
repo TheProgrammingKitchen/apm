@@ -25,14 +25,16 @@
   </div>
 <% end %>
 
+<div class="debug">
 <h3>Debug</h3>
 
-PARAMS
-<pre>
-  <%= inspect(@conn.params) %>
-</pre>
-ISSUE
-<pre>
-  <%= inspect(@issue) %>
-</pre>
+  PARAMS
+  <pre>
+    <%= inspect(@conn.params) %>
+  </pre>
+  ISSUE
+  <pre>
+    <%= inspect(@issue) %>
+  </pre>
+</div>
 

@@ -2,11 +2,14 @@
 /* General stuff */
 /*               */
 header {
-  background: lightgray;
-  height: 9em;
+  background: white;
+  height: 12em;
 }
 
+
 .main {
+  background: white;
+  clear: both;
   margin: 0;
   padding: 1em;
 }
@@ -33,6 +36,7 @@ header {
 /*            */
 
 .menu-and-login {
+  clear: both;
   margin-bottom: 0;
   margin-top: 0;
   margin-left: 0;
@@ -55,6 +59,20 @@ header {
   max-width: 100%;
 }
 
+#issues * p {
+  padding-right: 1.5em;
+  text-align: justify;
+}
+.issue-index address {
+  margin: 0;
+  padding-top: 0;
+}
+
+.issue-index address a {
+  padding: 0;
+  margin: 0;
+}
+
 #issues .issue-index {
   padding-left: 1em;
 }
@@ -65,8 +83,12 @@ header {
   margin-bottom: 2em;
   font-size: small;
 }
-.issue-index .children h2 {
-  font-size: small;
+
+.issue-index > h2:nth-child(2) {
+  font-size: 2em;
+  margin-bottom: 0;
+  border-bottom: 1px solid lightgrey;
+  width: 85%;
 }
 
 .issue-index ul.attribute {
@@ -74,15 +96,20 @@ header {
   margin: 0;
   padding: 0;
 }
+
 .issue-index ul.attribute li {
   margin-left: 0;
   padding-left: 0;
 }
+
 .issue-index ul.attribute li label {
   width: 4em;
 }
-.issue-description {
+
+.input-text {
   font-size: larger;
+  min-height: 10em;
+  font-family: Courier new;
 }
 
 .issue-links {
@@ -112,6 +139,7 @@ ul.link-buttons li {
   color: white;
   font-size: smaller;
 }
+
 ul.link-buttons li a {
   color: white;
 }
@@ -121,6 +149,7 @@ ul.link-buttons li:hover {
   color: white;
   text-shadow: 0px 0px #ddd;
 }
+
 ul.link-buttons li a:hover {
   text-decoration: none;
   color: white;
@@ -128,33 +157,66 @@ ul.link-buttons li a:hover {
 
 .debug {
   font-size: x-small;
-  border: 1px solid lightgrey;
-  padding: 0.5em;
+  border: 1px solid darkgrey;
+  border-radius: 1em;
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.2);
+  padding: 1.5em;
+  margin-top: 0.5em;
+  background: lightgrey;
   margin-bottom: 0.5em;
   margin-right: 0.5em;
+  display: none;
+}
+
+.logo-container {
+  padding: 1.5em;
+  max-height: 81px;
+  height: 81px;
+}
+
+.logo {
+  background: white;
+  float: left;
+  max-height: 81px;
+  max-width: 700px;
 }
 
 /* Login component in header */
 .login { 
   font-size: x-small; 
-  height: 5em; 
+  height: 91px;
+  padding: 2em;
   float: right; 
   text-align: left; 
-  padding-left: 2em; 
+  background: white;
+  border-left: 1px solid darkgrey;
+  border-bottom: 1px solid darkgrey;
 }
+
 .login > h2 { margin-top: 0px; font-size: x-small; }
 .login .login-form { }
 .login .login-form label { }
 .login .login-form input { }
 .login .login-form select {  }
 
+button#login { }
+button#logout { }
+button#show-debug {
+  background: darkgrey; 
+  float: right;
+}
 
 /* Landing Page */
 .project-readme {
   padding: 2em;
 }
 
+.alert {
+  clear: both;
+}
+
 /* Messages and hints */
+
 .error {
   padding: 1em;
   background-color: darkred;
@@ -193,4 +255,18 @@ ul.link-buttons li a:hover {
 .form-default .input-text,
 .form-default .input-field {
   border: 1px solid #ddd;
+}
+
+@media screen and (max-width: 960px) {
+  .login {
+    width: 100%;
+    margin-bottom: 1em;
+    border-right: 1px solid darkgrey;
+  }
+
+  .logo-container {
+    display: none;
+    max-height: 81px;
+  }
+
 }

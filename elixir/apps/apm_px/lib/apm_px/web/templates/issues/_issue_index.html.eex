@@ -11,24 +11,24 @@
   </div>
 
   <h2><%= @issue.attributes.subject %></h2>
+  <address>
+    <%= if @parent_id != :no_parent do %>
+      <%= link parent_subject(@parent_id), to: "/issues/#{@parent_id}" %> 
+      /
+    <% end %>
+    <%= link @issue.id, to: "/issues/#{@issue.id}" %></address>
 
   <ul class="attribute">
-    <li><label>UUID:</label> <%= link @issue.id, to: "/issues/#{@issue.id}" %></li>
-    <%= if @parent_id != :no_parent do %>
-    <li><label>Parent:</label> <%= link parent_subject(@parent_id), to: "/issues/#{@parent_id}" %></li>
-    <% end %>
   </ul>
   <div class="issue-description"><%= description(@issue, :markdown) %></div>
 
+<div class="debug">
+  <p>Debug information:</p>
+  <code>
+    <%= inspect @issue %>
+  </code>
+</div>
 
-  <!--
-    <div class="debug">
-      <p>Debug information:</p>
-      <code>
-        <%= inspect @issue %>
-      </code>
-    </div>
-  -->
   
   <div class="issue-children">
     <%= unless( @children == :not_found ) do %>

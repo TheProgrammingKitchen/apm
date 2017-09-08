@@ -6,6 +6,7 @@
 
 <%= form_tag("/logout", method: :post, class: "login-form") %>
   <button id="logout"><%= gettext "logout" %></button>
+  <button id="show-debug"><%= gettext "toggle debug" %></button>
 </form>
 
 
