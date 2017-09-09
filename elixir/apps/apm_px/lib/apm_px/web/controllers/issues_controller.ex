@@ -63,8 +63,7 @@ defmodule ApmPx.Web.IssuesController do
   """
   def update(conn, params) do
     {subject,options,_parent} = cast(params["issue"])
-    entity = %ApmIssues.Node{ id: UUID.uuid1(), attributes: Map.merge(options,%{subject: subject}) }
-    ApmIssues.update(params["id"], entity.attributes)
+    ApmIssues.update(params["id"], Map.merge(options,%{subject: subject}) )
     conn 
       |> put_flash(:success, gettext("Issue successfully updated"))
       |> redirect(to: "/issues/#{params['id']}")
@@ -74,14 +73,11 @@ defmodule ApmPx.Web.IssuesController do
   Deleat an issue and its children
   """
   def delete(conn, params) do
-    id = params["id"]
-    ApmIssues.drop!(id)
+    ApmIssues.drop!(params["id"])
     conn
       |> put_flash(:success, gettext("Issue deleted"))
       |> redirect(to: issues_path(conn, :index))
   end
-
-
   
   ### Private helpers ########################################
 
@@ -90,9 +86,12 @@ defmodule ApmPx.Web.IssuesController do
   defp cast(params) do
     subject = params["subject"]
     options =  Map.drop(params, ["subject"])
-    entity = for {key, val} <- options, into: %{}, do: {String.to_atom(key), val}
+    entity = options |> with_atom_keys 
     {subject, entity, params["parent_id"]}
   end
 
+  defp with_atom_keys(map) do
+    for {key, val} <- map, into: %{}, do: {String.to_atom(key), val}
+  end
 end
 
