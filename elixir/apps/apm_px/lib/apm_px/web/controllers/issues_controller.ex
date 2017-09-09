@@ -97,7 +97,7 @@ defmodule ApmPx.Web.IssuesController do
     {max_children,_} =  params["fake"]["number_of_sub_nodes"] |> Integer.parse()
     {depth,_} =  params["fake"]["depth"] |> Integer.parse()
 
-    Enum.each( (1..cnt), fn(n) ->
+    Enum.each( (1..cnt), fn(_n) ->
       root_uuid = UUID.uuid1()
       %ApmIssues.Node{ id: root_uuid, attributes: %{ subject: Faker.Beer.name,
         description: make_longer_text() }}
@@ -113,7 +113,7 @@ defmodule ApmPx.Web.IssuesController do
 
   defp create_children(parent,0, max_children) do
     children = :rand.uniform(max_children) - 1
-    Enum.each( 0..children, fn(child) ->
+    Enum.each( 0..children, fn(_child) ->
       uuid = UUID.uuid1()
       register_fake_node(uuid,parent)
     end)
@@ -145,7 +145,7 @@ defmodule ApmPx.Web.IssuesController do
     num = :rand.uniform(30)
     append_text(to, from, num - 1)
   end
-  defp append_text(to, from, 0), do: to
+  defp append_text(to, _from, 0), do: to
   defp append_text(to, from, num) do
     (to <> from.() <> " ")
     |> append_text(from, num-1)

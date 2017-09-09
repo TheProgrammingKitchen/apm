@@ -194,7 +194,7 @@ defmodule ApmIssues do
   def seed(issues) do
     Enum.each(issues, fn(issue) ->
       case issue do
-        %ApmIssues.Node{ id: id, attributes: attributes} -> ApmIssues.register_node(issue)
+        %ApmIssues.Node{ id: _id, attributes: _attributes} -> ApmIssues.register_node(issue)
         {node, parent} -> ApmIssues.register_node(node, parent)
         _ -> Logger.warn("UNKNOWN ISSUE IN SEED: " <> inspect(issue))
       end
