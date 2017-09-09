@@ -90,12 +90,12 @@ defmodule ApmIssues do
   Get all root nodes
 
   ## Example:
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1 } )
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1.1 }, 1 )
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2 } )
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2.2 }, 2 )
-     iex> ApmIssues.roots()
-     [1,2]
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1 } )
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1.1 }, 1 )
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2 } )
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 2.2 }, 2 )
+      iex> ApmIssues.roots()
+      [1,2]
   """
   def roots() do
     Registry.state
@@ -106,29 +106,28 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Get data of a nodes
+  Get data of a node as `%ApmIssues.Issue{}`
 
   ## Example:
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
-     iex> ApmIssues.data(1)
-     %ApmIssues.Issue{attributes: %{foo: :bar}, id: 1}
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
+      iex> ApmIssues.data(1)
+      %ApmIssues.Issue{attributes: %{foo: :bar}, id: 1}
   """
   def data(id) do
-    #{%ApmIssues.Issue{attributes: %{foo: :bar}, id: 1}, [parent: nil]}
     {node,_parent} = case lookup(id) do
-      :not_found -> :not_found
       {_node, _sup, data} -> ApmIssues.Node.Data.data(data)
+      error -> {:error, inspect(error)}
     end
     node
   end
 
   @doc"""
-  Get attributes of a data nodes
+  Get attributes of a data nodes as `%{}`
 
   ## Example:
-     iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
-     iex> ApmIssues.attributes(1)
-     %{foo: :bar}
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
+      iex> ApmIssues.attributes(1)
+      %{foo: :bar}
   """
   def attributes(id) do
      case lookup(id) do
@@ -140,7 +139,13 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Update attributes of a node.
+  Update attributes of the node with `id` by `Map.merge(attributes, changeset)`
+
+  ## Example:
+      iex> ApmIssues.register_node( %ApmIssues.Node{ id: 1, attributes: %{foo: :bar} } )
+      iex> ApmIssues.update(1, %{foo: :updated_baz} )
+      iex> ApmIssues.attributes(1)
+      %{foo: :updated_baz}
   """
   def update(id, changeset) do
      case lookup(id) do
