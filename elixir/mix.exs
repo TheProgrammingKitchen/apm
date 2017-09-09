@@ -27,10 +27,10 @@ defmodule Apm.Mixfile do
 
   defp docs do
     [
-      #main: "index", # The main page in the docs
+      # main: "README.md", # The main page in the docs
       logo: "apps/apm_px/assets/priv/static/images/apm-logo-top.png",
       extras: [
-        "README.md",
+        "./README.md",
         "apps/apm_issues/README-APM-ISSUES.md",
         "apps/apm_px/README-APM-PHOENIX.md",
         "apps/apm_user/README-APM-USER.md"

@@ -3,6 +3,9 @@ defmodule ApmPx.Web.PageView do
   use ApmPx.Web, :view
 
 
+  @doc"""
+  Wrap call to markdown tool to render content of `filename`.
+  """
   def markdown(filename) do
     filename 
       |> File.read!

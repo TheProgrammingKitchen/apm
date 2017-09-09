@@ -1,0 +1,31 @@
+<%= form_for @conn, @path, [class: "form-horizontal", as: "fake" ], fn(f) -> %>
+
+  <div class="field-group">
+    <%= label f, :number_of_roots, gettext("Number of root nodes") %>
+    <%= text_input f, :number_of_roots , value: @number_of_roots, class: "input-field" %>
+  </div>
+
+  <div class="field-group">
+    <%= label f, :number_of_sub_nodes, gettext("Number of sub nodes per root") %>
+    <%= text_input f, :number_of_sub_nodes, value: @number_of_sub_nodes, class: "input-field" %>
+  </div>
+  
+  <div class="field-group">
+    <%= label f, :depth, gettext("Depth of sub nodes") %>
+    <%= text_input f, :depth, value: @depth, class: "input-field" %>
+  </div>
+  
+  <div class="field-group">
+    <%= submit gettext("Submit") %>
+  </div>
+<% end %>
+
+<div class="debug">
+<h3>Debug</h3>
+
+  PARAMS
+  <pre>
+    <%= inspect(@conn.params) %>
+  </pre>
+</div>
+

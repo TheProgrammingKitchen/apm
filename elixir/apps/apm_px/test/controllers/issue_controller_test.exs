@@ -129,4 +129,24 @@ defmodule ApmPx.IssueControllerTest do
     assert before_count + 1 == count_after
   end
 
+  test "GET /issues/fake renders the fake-form", %{conn: conn} do
+    session = 
+      conn
+      |> login_as("some user", "admin")
+      |> get( "/issues/fake" )
+
+    assert html_response(session, 200) =~ "Number of root nodes"
+    assert html_response(session, 200) =~ "Number of sub nodes per root"
+    assert html_response(session, 200) =~ "Depth of sub nodes"
+  end
+
+  test "POST /issues/fake creates faker entries based on _fake_form.", %{conn: conn} do
+    ApmIssues.Registry.drop!
+    conn
+    |> login_as("Admin", "admin")
+    |> post( "/issues/fake", %{ "fake" => %{ "number_of_roots" => "3", "number_of_sub_nodes" => "3", "depth" => "3" }})
+
+    assert ApmIssues.Registry.state |> Map.keys |> Enum.count >= 3
+  end
+
 end

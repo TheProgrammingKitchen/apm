@@ -11,70 +11,79 @@ This is the ./elixir subfolder of APM.
 If you're new to the project, please start with README.md in the root-path
 of the project.
 
-is an umbrella project with the following parts
+`apm/elixir` is an umbrella project with the following parts
 
-  * apm_issues
-  * apm_user
-  * apm_px
+  * apm_issues – the core of the business logic and data handling
+  * apm_user – defines user-structure, roles, and authentication
+  * apm_px – The Phoenixframework Application
 
-Watch out `README.md` in each of the apps directories.
+Watch out `README-*.md` in each of the apps directories.
 
-### Update dependencies
+### Get And Update Dependencies
 
     mix deps.clean --all
     mix deps.get
+
     mix deps.update --all
 
-### Generate documentation
+## Umbrella Apps
 
-    mix docs
-    open doc/index.html
-
-## apm_user
+### apm_user
 
 OTP-Application responsible for all user-related functions.
 Roles, Authentication, ...
 
-## apm_issues
+See `ApmUser`
 
-Backend application to deal with /Jira/Issues. The structs, the repository, ...
+### apm_issues
 
-## apm_px
+Backend application to deal with 'Issues'. 
+Structs, Supervisors, Data-nodes, ...
+
+See: `ApmIssues`
+
+### apm_px
 
 The _Phoenix-Frontend_ application
 
+See `ApmPx`
+
 ## Online Documentation
 
+To generate and read the online documentation run
+
+    mix docs
     open doc/index.html
 
-## Run the tests
+# Testing
+
+## Run unit and controller tests
 
     mix test --exclude hound
 
-## Run integration/E2E tests
+## Run full test suite including end to end tests with 'Hound'
 
-    1. cd apps/apm_px
-    2. mix phoenix.server # in an extra terminal
-    3. phantomjs --wd     # in an extra terminal
-    4. mix test --trace   # in apps/apm_px or in the project root path
+  1. `cd apm/elixir/apps/apm_px`
+  2. `mix phoenix.server` – in an extra terminal
+  3. `phantomjs --wd`     – in an extra terminal
+  4. `mix test --trace`   – in apps/apm_px or in the project root path
 
 
-# TODO
-
-## Integration Tests
+## A Note About Integration Tests
 
 Because the Phoenix application has to be started before running the integration tests,
 the tests works only if you just have started a newly compiled phx.server. After you
 fiddled around with the application data, the tests might fail and you have to restart
 the application phx.server.
 
-* Find a way to reset the app befor running integration tests.
+### Reset test data for E2E tests
+
+    cd apps/apm_px
+    touch mix.exs  # ensure the binary gets rebuild
+    mix phx.server # will generate simple test data from `data/fixtures/issues.json`
+
 
  See [Pivotal Tracker][] and [Github][]
-
-
-
-
 
 [Github]: https://github.com/TheProgrammingKitchen/apm
 [Pivotal Tracker]: https://www.pivotaltracker.com/n/projects/2079917
