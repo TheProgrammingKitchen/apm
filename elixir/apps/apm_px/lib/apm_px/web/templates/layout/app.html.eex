@@ -26,6 +26,7 @@
               <li><a href="/">Home</a></li>
               <li><a href="/issues">Issues</a></li>
               <li><a href="/issues/new">Create Issue</a></li>
+              <li><a href="/issues/fake">Fake Issues</a></li>
             </ul>
           </nav>
         </div>

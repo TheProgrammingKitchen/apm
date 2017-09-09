@@ -77,6 +77,8 @@ defmodule ApmIssues.Registry do
   Returns the node tuple if search for the given attribute was
   successful, :not_found if nothing was found, and :no_argument
   if no node has a definition of `attribute` in `attributes`.
+
+  See `ApmIssues.find_by/2` for example.
   """
   def find_by(server \\ @registry, attribute, search_term) do
     GenServer.call(server, {:find_by, attribute, search_term})
