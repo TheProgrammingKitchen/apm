@@ -10,7 +10,7 @@
     </ul>
   </div>
 
-  <h2><%= @issue.attributes.subject %></h2>
+  <h2><%= subject(@issue) %></h2>
   <address>
     <%= if @parent_id != :no_parent do %>
       <%= link parent_subject(@parent_id), to: "/issues/#{@parent_id}" %> 
