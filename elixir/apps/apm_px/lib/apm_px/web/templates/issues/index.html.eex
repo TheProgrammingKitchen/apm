@@ -3,6 +3,11 @@
 <%= unless ApmPx.Web.SessionView.logged_in?(@conn) do %>
   <div class="error"><%= gettext "Please login first" %></div>
 <% else %>
+    <div class="debug">
+      <h3>Debug Info</h3>
+      <h4>Runtime:</h4>
+      <%= debug_info(@conn) %>
+    </div>
   <div id="issues" class="issues">
     <%= ApmPx.Web.IssuesView.render_issues_index(@conn) %>
   </div>

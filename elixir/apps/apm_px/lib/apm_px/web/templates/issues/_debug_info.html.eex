@@ -1,0 +1,5 @@
+<pre> 
+Number of issues: <%= ApmIssues.Registry.state |> Map.keys |> Enum.count %>
+Keys: <%= ApmIssues.Registry.state |> Map.keys |> inspect %>
+</pre>
+

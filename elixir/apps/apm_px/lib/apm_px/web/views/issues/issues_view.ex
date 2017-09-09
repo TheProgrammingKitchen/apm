@@ -75,6 +75,10 @@ defmodule ApmPx.Web.IssuesView do
     render("_form.html", conn: conn, issue: changeset, path: path)
   end
 
+  def debug_info(conn) do
+    render("_debug_info.html", conn: conn)
+  end
+
   @doc "Format subject"
   def subject(issue) do
     case issue.attributes do
