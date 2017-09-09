@@ -27,8 +27,8 @@ defmodule ApmPx.Web.Router do
     # issues
     get "/issues"          , IssuesController , :index
     post "/issues"         , IssuesController , :create
-    get "/issues/fake"     , IssuesController , :new_fake, as: :new_fake
-    post "/issues/fake"    , IssuesController , :fake, as: :fake
+    get "/issues/fake"     , FakerController , :new_fake, as: :new_fake
+    post "/issues/fake"    , FakerController , :fake, as: :fake
     post "/issues/:id"     , IssuesController , :update
     get "/issues/new"      , IssuesController , :new
     get "/issues/:id"      , IssuesController , :show
