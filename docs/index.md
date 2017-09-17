@@ -19,6 +19,9 @@
   * [ZenHub Board][]
 
 
+----
+[Edit this page on Github](https://github.com/TheProgrammingKitchen/apm/edit/master/docs/index.md)
+
 [Elixir]: https://elixir-lang.org
 [Elixir-Getting Started]: https://elixir-lang.org/getting-started/introduction.html
 [Phoenix]: http://www.phoenixframework.org
