@@ -1,3 +1,5 @@
+![Logo](https://github.com/TheProgrammingKitchen/apm/raw/master/elixir/apps/apm_px/assets/static/images/apm-logo-top.png)
+
 # APM – The Agile Project Manager
 
 ## Reasons why this project was started
