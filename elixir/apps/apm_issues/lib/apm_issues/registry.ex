@@ -102,6 +102,22 @@ defmodule ApmIssues.Registry do
     end
   end
 
+  @doc"""
+  Count all registered entries
+
+  Example:
+
+      iex> ApmIssues.register_node %ApmIssues.Node{id: 1, attributes: %{subject: "Test 1"}}
+      iex> ApmIssues.register_node %ApmIssues.Node{id: 2, attributes: %{subject: "Test 2"}}
+      iex> ApmIssues.Registry.count()
+      2
+  """
+  def count(server \\ @registry) do
+    state(server) 
+    |> Map.keys
+    |> Enum.count
+  end
+
   #
   # GenServer Callbacks
   #

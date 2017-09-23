@@ -1,3 +1,7 @@
+<h1>
+  <%= gettext "Create some fake entries" %>
+</h1>
+
 <%= unless ApmPx.Web.SessionView.logged_in?(@conn) do %>
   <div class="error"><%= gettext "Please login first" %></div>
 <% else %>
@@ -16,6 +20,11 @@
     <div class="field-group">
       <%= label f, :depth, gettext("Depth of sub nodes") %>
       <%= text_input f, :depth, value: @depth, class: "input-field" %>
+    </div>
+
+    <div class="field-group">
+      <%= label f, :description_max_len, gettext("Max length of description") %>
+      <%= text_input f, :description_max_len, value: @description_max_len, class: "input-field" %>
     </div>
 
     <div class="field-group">
