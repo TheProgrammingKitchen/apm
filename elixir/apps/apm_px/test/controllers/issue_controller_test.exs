@@ -129,6 +129,14 @@ defmodule ApmPx.IssueControllerTest do
     assert before_count + 1 == count_after
   end
 
+  test "GET /issues/fake renders error if not logged in", %{conn: conn} do
+    session = 
+      conn |> get( "/issues/fake" )
+    assert html_response(session, 200) =~ "Please login first"
+    refute html_response(session, 200) =~ "Number of sub nodes per root"
+    refute html_response(session, 200) =~ "Depth of sub nodes"
+  end
+
   test "GET /issues/fake renders the fake-form", %{conn: conn} do
     session = 
       conn

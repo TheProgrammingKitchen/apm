@@ -5,7 +5,6 @@
   * [Github][]
   * [Project Page][]
   * [Scrum Board][]
-  * [Pivotal Tracker][] _obsolete_
 
 This is the ./elixir subfolder of APM.
 If you're new to the project, please start with README.md in the root-path
@@ -64,7 +63,7 @@ To generate and read the online documentation run
 ## Run full test suite including end to end tests with 'Hound'
 
   1. `cd apm/elixir/apps/apm_px`
-  2. `mix phoenix.server` – in an extra terminal
+  2. `mix phx.server`     – in an extra terminal
   3. `phantomjs --wd`     – in an extra terminal
   4. `mix test --trace`   – in apps/apm_px or in the project root path
 

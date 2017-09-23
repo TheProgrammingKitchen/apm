@@ -34,6 +34,7 @@ defmodule ApmIssuesTest do
     assert id == 1.1
     assert is_pid(supervisor)
     assert is_pid(data_agent)
+    assert ApmIssues.parent_id(1.1) == 1
   end
 
   test "children of a node with sub-nodes" do

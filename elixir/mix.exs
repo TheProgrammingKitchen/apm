@@ -13,8 +13,8 @@ defmodule Apm.Mixfile do
 
       # Docs
       name: "The Agile Project Manager",
-      source_url: "https://github.com/iboard/apm",
-      #homepage_url: "http://not set up yet"
+      source_url: "https://github.com/TheProgrammingKitchen/apm",
+      homepage_url: "https://theprogrammingkitchen.github.io/apm/",
       docs:  docs()  
     ]
   end

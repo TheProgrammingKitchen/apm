@@ -30,7 +30,7 @@ defmodule ApmIssues do
   end
 
   @doc"""
-  Register `node` as a child of node whith `parent_id`.
+  Register `node` as a child of the node with `parent_id`.
   """
   def register_node(node, parent_id) do
     parent = ApmIssues.lookup(parent_id) 
@@ -48,7 +48,8 @@ defmodule ApmIssues do
 
   @doc"""
   Lookup a `ApmIssues.Node` by `id` and returns a tuple of
-  `{ found_id, supervisor_pid, data_agent_pid }`.
+  `{ found_id, supervisor_pid, data_agent_pid }` or `:not_found`
+  if the `id` is not found within the registry.
 
   ## Examples:
       iex> ApmIssues.register_node( %ApmIssues.Node{id: 1} )
@@ -99,9 +100,7 @@ defmodule ApmIssues do
   """
   def roots() do
     Registry.state
-      |> Enum.filter( fn({id, _node}) ->
-        ApmIssues.parent_id(id) == :no_parent
-      end)
+      |> filter_roots
       |> Enum.map( fn({id, _node}) -> id end)
   end
 
@@ -115,7 +114,7 @@ defmodule ApmIssues do
   """
   def data(id) do
     {node,_parent} = case lookup(id) do
-      {_node, _sup, data} -> ApmIssues.Node.Data.data(data)
+      {_node, _sup, data_agent} -> ApmIssues.Node.Data.data(data_agent)
       error -> {:error, inspect(error)}
     end
     node
@@ -132,8 +131,8 @@ defmodule ApmIssues do
   def attributes(id) do
      case lookup(id) do
       :not_found -> :not_found
-      {_node, _sup, data} -> 
-        {node,_parent} = ApmIssues.Node.Data.data(data)
+      {_node, _sup, data_agent} -> 
+        {node,_parent} = ApmIssues.Node.Data.data(data_agent)
         node.attributes || %{}
     end
   end
@@ -150,7 +149,7 @@ defmodule ApmIssues do
   def update(id, changeset) do
      case lookup(id) do
       :not_found -> :not_found
-      {_node, _sup, data} -> ApmIssues.Node.Data.update(data, changeset)
+      {_node, _sup, data_agent} -> ApmIssues.Node.Data.update(data_agent, changeset)
     end
   end
 
@@ -160,7 +159,7 @@ defmodule ApmIssues do
   def parent_id(node_id) do
     case lookup(node_id) do
       :not_found -> :not_found
-      {_child_id, _supervisor, data} -> ApmIssues.Node.Data.parent_id(data)
+      {_child_id, _supervisor, data_agent} -> ApmIssues.Node.Data.parent_id(data_agent)
     end
   end
 
@@ -178,13 +177,8 @@ defmodule ApmIssues do
   """
   def drop!(id) do
     case Registry.lookup(id) do
-      nil -> 
-        :not_found
-      {id_found,sup,_dat} ->
-        ApmIssues.children_ids(id_found)
-          |> Enum.each( &ApmIssues.drop!(&1) ) 
-        Process.exit(sup,:kill)
-        :ok
+      nil -> :not_found
+      {id_found,sup,_dat} -> drop_children(id_found,sup)
     end
   end
 
@@ -229,6 +223,20 @@ defmodule ApmIssues do
                    |> Enum.reverse
                    |> hd
     {:ok, data_child}
+  end
+
+  defp drop_children(parent_id, supervisor) do
+    ApmIssues.children_ids(parent_id)
+    |> Enum.each( &ApmIssues.drop!(&1) ) 
+    Process.exit(supervisor,:kill)
+    :ok
+  end
+
+  defp filter_roots(state) do
+    state
+      |> Enum.filter( fn({id, _node}) ->
+        ApmIssues.parent_id(id) == :no_parent
+      end)
   end
 
 end

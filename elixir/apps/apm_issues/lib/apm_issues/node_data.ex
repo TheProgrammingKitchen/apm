@@ -44,9 +44,7 @@ defmodule ApmIssues.Node.Data do
   """
   def update(pid, changeset) do
     Agent.update(pid, fn({data, parent}) ->
-      new_attr = Map.merge(data.attributes, changeset)
-      new_state = Map.merge(data, %{attributes: new_attr})
-      {new_state, parent}
+      {update_node(data,changeset), parent}
     end)
   end
 
@@ -66,5 +64,13 @@ defmodule ApmIssues.Node.Data do
     end)
   end
 
+  defp update_node(data,changeset) do
+    Map.merge(data.attributes, changeset)
+    |> update_attributes(data)
+  end
+
+  defp update_attributes(new_attributes, data) do
+    Map.merge(data, %{attributes: new_attributes})
+  end
 end
 

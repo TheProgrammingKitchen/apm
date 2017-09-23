@@ -3,7 +3,7 @@
 ## Reasons why this project was started
 
   - Jira sux
-  - I'm on vacation and I need to do some fun stuff
+  - I was on vacation and in need to do some fun stuff
   - Practicing with Elixir and Phoenix
 
 ## Prerequisites
@@ -17,8 +17,6 @@
   * [Github][]
   * [Project Page][]
   * [ZenHub Board][]
-  * -[Pivotal Tracker][]- *_deprecated_*
-
 
 ## Project Structure and Subdirectories
 
@@ -44,7 +42,7 @@ Files for the [Github.io pages] of this project.
   * cd into `elixir/`
   * run `mix deps.get`
   * cd into `elixir/apps/apm_px`
-    * perhaps you need to run `npm install`
+    * run `npm install`
   * start the server with `mix phoenix.server` (in an extra terminal window)
     - now you can open the frontend in your browser `http://localhost:4000`
   * start `phantomjs --wd` (in an extra terminal window)

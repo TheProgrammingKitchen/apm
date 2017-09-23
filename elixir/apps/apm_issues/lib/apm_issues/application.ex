@@ -5,7 +5,10 @@ defmodule ApmIssues.Application do
   """
   use Application
 
-  @doc false
+  @doc"""
+  Start the application's supervision tree
+  and the `ApmIssues.Registry` as a worker.
+  """
   def start(_type, _arg) do
     children = [
       {ApmIssues.Registry, []},

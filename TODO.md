@@ -1,5 +1,9 @@
 # TODO
 
+  This file isn't up to date at any time.
+  To be sure not to miss latest issues, please
+  visit the [Zenhub][] page for this project.
+
 # DONE
 
 ## Introduce a Key/Value store for Issues
@@ -19,3 +23,6 @@
     ✔︎ Issue.state(pid) returns the struct %ApmIssues.Issue{}
     ✔︎ Issue.add_child(father_pid,son_pid) works
     ✔︎ Issue.children(pid) returns the list of children
+
+
+[Zenhub]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128

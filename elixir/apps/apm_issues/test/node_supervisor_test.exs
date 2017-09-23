@@ -11,7 +11,7 @@ defmodule NodeSupervisorTest do
 
   test "starting a new root node" do
     {:ok, {id,node_supervisor,node_data_agent}} = 
-    ApmIssues.register_node( %Node{ id: "Node 1", attributes: %{} } )
+      ApmIssues.register_node( %Node{ id: "Node 1", attributes: %{} } )
 
     assert is_pid(node_data_agent)
     assert is_pid(node_supervisor)

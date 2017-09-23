@@ -4,3 +4,6 @@ frontend/spec/helpers/*js
 frontend/public/assets/**/*js
 doc/
 *swp
+.sass-cache
+docs/_site
+_site/

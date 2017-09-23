@@ -27,8 +27,9 @@ defmodule ApmIssues.Node.Supervisor do
   @doc"""
   Initialize the Supervisor.
   Start a Data Agent `ApmIssues.Node.Data` as a supervisor child.
-  This callback is called during `ApmIssues.Node.Supervisor.start_link/1`.
-  Don't call this function directly.
+  This callback gets called during `ApmIssues.Node.Supervisor.start_link/1`.
+  Don't call this function directly. It also injects the pid of this
+  supervisor to the state of the node.
   """
   def init([args]) do
     node = args |> Map.merge( %{ supervisor: self() } )
@@ -87,14 +88,14 @@ defmodule ApmIssues.Node.Supervisor do
         false
   """
   def stop(server) do
-    stop_children_and_data_agent(server)
+    stop_children_incl_data_agent(server)
     Supervisor.stop(server)
   end
 
   #
   # Private helpers
   #
-  defp stop_children_and_data_agent(server) do
+  defp stop_children_incl_data_agent(server) do
     Supervisor.which_children(server)
     |> Enum.each( fn({_node,data,_,_}) ->
          Supervisor.terminate_child(server, data)
