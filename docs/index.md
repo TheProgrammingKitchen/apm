@@ -16,9 +16,10 @@
 
 ## On the Web
 
-  * [Github][]
-  * [Project Page][]
-  * [ZenHub Board][]
+  * Find/fork/contribute the source on [Github][]
+  * Find/build the community on [Slack][], [Join With Slack][]
+  * Read more at [Project Page][]
+  * Find the roadmap on [ZenHub Board][]
 
 
 ----
@@ -34,3 +35,6 @@
 
 [ZenHub Board]: https://app.zenhub.com/workspace/o/theprogrammingkitchen/apm/boards?repos=98336128
 [Project Page]: https://theprogrammingkitchen.github.io/apm/
+
+[Join With Slack]: https://join.slack.com/t/iboardcc/shared_invite/enQtMjY3MjcyMjA5MDc3LWEzOTE0NTM3MjMyZmVlZjYzZjYzMjdkNzcwYjA3NzFkMGE0NDM1Yzk5ZWQzNDYyMjQ0M2Q1ZjM4NzQ1NjQwMTA
+[Slack]: https://iboardcc.slack.com
